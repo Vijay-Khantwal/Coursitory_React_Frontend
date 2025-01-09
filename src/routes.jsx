@@ -1,10 +1,10 @@
-import CourseList from './pages/CourseList';
 import CourseDetails from './pages/CourseDetails';
 import { createBrowserRouter } from 'react-router-dom';
 import VideoPage from './pages/VideoPage';
 import Login from './pages/auth/Login';
 import Signup from './pages/auth/Singup';
 import Landing from './pages/Landing/Landing';
+import CoursePage from './pages/Courses/CoursePage';
 const routes = createBrowserRouter([
     {
         path: '/',
@@ -20,7 +20,7 @@ const routes = createBrowserRouter([
     },
     {
         path: '/courses',
-        element: <CourseList />
+        element: <CoursePage />
     },
     {
         path:'/courseDetails',
@@ -33,7 +33,7 @@ const routes = createBrowserRouter([
     {
         path:'/landing',
         element : <Landing/>
-    }
+    },
 ]);
 
 export default routes;

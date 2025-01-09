@@ -48,7 +48,7 @@ const Login = () => {
         success: (response) => {
           localStorage.setItem("token", response.data.token);
           localStorage.setItem("isLogged", true);
-          navigate("/landing");
+          navigate("/courses");
           return <b>Login successful!</b>;
         },
         error: (error) => {
