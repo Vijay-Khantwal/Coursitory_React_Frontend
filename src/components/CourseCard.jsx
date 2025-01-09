@@ -27,6 +27,7 @@ const CourseCard = ({ course, enrolled }) => {
     if (course.thumbnail) {
       fetchImage();
     } else {
+      setImageData(null);
       setLoading(false);
     }
   }, [course.thumbnail]);

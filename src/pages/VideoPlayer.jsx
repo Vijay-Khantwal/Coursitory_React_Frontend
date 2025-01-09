@@ -12,51 +12,7 @@ const VideoPlayer = ({ courseId, video ,thumbnailSource}) => {
   const [duration, setDuration] = useState(0);
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const [isBuffering, setIsBuffering] = useState(true);
-  const [videoLink, setVideoLink] = useState('');
-
-  // useEffect(() => {
-  //   const token = localStorage.getItem('token');
-  //   const videoUrl = `${import.meta.env.VITE_API_URL}/user/stream/video/${courseId}/${video.id}`;
-
-  //   const streamVideo = async () => {
-  //     try {
-  //       const response = await fetch(videoUrl, {
-  //         headers: {
-  //           'Authorization': `Bearer ${token}`
-  //         }
-  //       });
-
-  //       if (!response.ok) throw new Error('Video fetch failed');
-
-  //       const reader = response.body.getReader();
-  //       const chunks = [];
-
-  //       while (true) {
-  //         const { done, value } = await reader.read();
-  //         if (done) break;
-  //         chunks.push(value);
-  //       }
-
-  //       const videoBlob = new Blob(chunks, { type: 'video/mp4' });
-  //       const videoObjectUrl = URL.createObjectURL(videoBlob);
-  //       setVideoLink(videoObjectUrl);
-  //       videoRef.current.src = videoObjectUrl;
-  //     } catch (error) {
-  //       console.error('Error streaming video:', error);
-  //     }
-  //   };
-
-  //   if (videoRef.current) {
-  //     streamVideo();
-  //   }
-
-  //   return () => {
-  //     if (videoLink) {
-  //       URL.revokeObjectURL(videoLink);
-  //     }
-  //   };
-  // }, [courseId, video.id]);
-  
+  const token = localStorage.getItem("token");
 
   const formatTime = (timeInSeconds) => {
     if (isNaN(timeInSeconds)) return '0:00';
@@ -143,8 +99,7 @@ const VideoPlayer = ({ courseId, video ,thumbnailSource}) => {
 
       <video
         ref={videoRef}
-        // src={videoLink}
-        src={`${import.meta.env.VITE_API_URL}/stream/video/${video.id}`}
+        src={`${import.meta.env.VITE_API_URL}/stream/video/${courseId}/${video.id}/${token}`}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
         onContextMenu={handleContextMenu}
@@ -164,7 +119,7 @@ const VideoPlayer = ({ courseId, video ,thumbnailSource}) => {
           onClick={handleProgressClick}
         >
           <div 
-            className="h-full bg-accentColor absolute top-0 left-0" 
+            className="h-full bg-yellow-300 absolute top-0 left-0" 
             style={{ width: `${progress}%` }} 
           />
         </div>

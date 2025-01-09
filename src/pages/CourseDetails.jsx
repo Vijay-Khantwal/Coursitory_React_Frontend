@@ -4,6 +4,7 @@ import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 import Header from "../components/Header";
 import toast from "react-hot-toast";
 import logo from "../assets/icon_3_white.png";
+import Footer from "../components/Footer";
 
 const CourseMaterial = ({
   course,
@@ -75,8 +76,7 @@ const CourseMaterial = ({
               </div>
               <div className="absolute bottom-0 left-0 right-0 p-4">
                 <h3 className="text-white text-xl font-semibold group-hover:translate-y-[-4px] transition-transform duration-300 line-clamp-2 overflow-hidden text-ellipsis">
-                  {video.title} to enhance typing skills to increase your skills
-                  amazing
+                  {video.title}
                 </h3>
               </div>
             </div>
@@ -203,6 +203,7 @@ const CourseDetails = () => {
           setIsEnrolled(data);
         }
       } catch (error) {
+        localStorage.removeItem('token');
         localStorage.removeItem('isLogged');
       } finally {
         setIsEnrolling(false);
@@ -311,8 +312,7 @@ const CourseDetails = () => {
   };
 
   return (
-    <>
-      <Header />
+    <>       <Header  />
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="container mx-auto px-4">
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
@@ -442,6 +442,7 @@ const CourseDetails = () => {
           </div>
         </div>
       </div>
+      <Footer/>
     </>
   );
 };
