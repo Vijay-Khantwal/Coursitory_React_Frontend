@@ -201,10 +201,11 @@ const CourseDetails = () => {
         if (response.ok) {
           const data = await response.json();
           setIsEnrolled(data);
+        } else {
+          localStorage.removeItem("token");
+          localStorage.removeItem("isLogged");
         }
       } catch (error) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('isLogged');
       } finally {
         setIsEnrolling(false);
       }
@@ -312,7 +313,9 @@ const CourseDetails = () => {
   };
 
   return (
-    <>       <Header  />
+    <>
+      {" "}
+      <Header />
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="container mx-auto px-4">
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
@@ -328,58 +331,58 @@ const CourseDetails = () => {
                 </h1>
 
                 <button
-            onClick={handleEnroll}
-            disabled={isEnrolled || isEnrolling}
-            className={`w-32 h-12 flex items-center justify-center rounded-lg text-white font-semibold text-lg
+                  onClick={handleEnroll}
+                  disabled={isEnrolled || isEnrolling}
+                  className={`w-32 h-12 flex items-center justify-center rounded-lg text-white font-semibold text-lg
             shadow-lg transform transition-all duration-300 ease-in-out
             ${
               isEnrolled
-              ? "bg-gradient-to-r from-green-400 to-green-600 cursor-default hover:shadow-green-200"
-              : isEnrolling
-              ? "bg-blue-400 cursor-wait animate-pulse"
-              : "bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0"
+                ? "bg-gradient-to-r from-green-400 to-green-600 cursor-default hover:shadow-green-200"
+                : isEnrolling
+                ? "bg-blue-400 cursor-wait animate-pulse"
+                : "bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0"
             }`}
-          >
-            {isEnrolling ? (
-            <svg
-              className="animate-spin h-5 w-5 text-white"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-              ></circle>
-              <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
-            ) : isEnrolled ? (
-            <span className="flex items-center">
-              <svg
-              className="w-5 h-5 mr-2"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              >
-              <path
-                fillRule="evenodd"
-                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                clipRule="evenodd"
-              />
-              </svg>
-              Enrolled
-            </span>
-            ) : (
-            "Enroll Now"
-            )}
-          </button>
+                >
+                  {isEnrolling ? (
+                    <svg
+                      className="animate-spin h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                  ) : isEnrolled ? (
+                    <span className="flex items-center">
+                      <svg
+                        className="w-5 h-5 mr-2"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      Enrolled
+                    </span>
+                  ) : (
+                    "Enroll Now"
+                  )}
+                </button>
               </div>
               <div className="flex items-center gap-3 mb-4">
                 <div className="flex">{renderStars(course.rating)}</div>
@@ -442,7 +445,7 @@ const CourseDetails = () => {
           </div>
         </div>
       </div>
-      <Footer/>
+      <Footer />
     </>
   );
 };

@@ -5,6 +5,7 @@ import Login from './pages/auth/Login';
 import Signup from './pages/auth/Singup';
 import Landing from './pages/Landing/Landing';
 import CoursePage from './pages/Courses/CoursePage';
+import AdminDashboard from './pages/AdminPages/AdminDashboard';
 const routes = createBrowserRouter([
     {
         path: '/',
@@ -33,6 +34,10 @@ const routes = createBrowserRouter([
     {
         path:'/landing',
         element : <Landing/>
+    },
+    {
+        path:'/admin/dashboard',
+        element : <AdminDashboard/>
     },
 ]);
 

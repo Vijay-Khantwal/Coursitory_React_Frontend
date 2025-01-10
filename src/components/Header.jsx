@@ -24,8 +24,8 @@ const Header = () => {
       });
       return;
     }
-    setIsSearchOpen(true);
     setSearchQuery(query);
+    setIsSearchOpen(true);
     
   };
 
