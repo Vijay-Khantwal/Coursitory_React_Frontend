@@ -13,7 +13,7 @@ const VideoPage = () => {
       <div className="min-h-screen bg-gray-100">
         <div className="max-w-7xl mx-auto px-4 py-8">
           {/* Video Player Section */}
-          <div className="w-3/4 aspect-video rounded-lg bg-black">
+          <div className="w-3/4 aspect-video rounded-lg bg-black min-w-[600px]">
             <VideoPlayer
               courseId={courseId}
               video={video}

@@ -13,7 +13,7 @@ const CoursePage = () => {
   const [isLogged, setIsLogged] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const name = "Aster Joules's";
+  const name = "Vijay's";
   useEffect(() => {
     if (location.state?.activeSection) {
       setActiveSection(location.state.activeSection);
@@ -44,7 +44,6 @@ const CoursePage = () => {
             localStorage.removeItem('isLogged');
             setActiveSection("allCourses");
             setEnrolledCourses([]);
-            toast.error("Session expired. Please login again.");
             return;
           }
 
@@ -62,9 +61,7 @@ const CoursePage = () => {
           setActiveSection("allCourses");
         }
       } catch (error) {
-        // console.error("Error fetching courses:", error);
         setIsLogged(false);
-        localStorage.removeItem('isLogged');
         setActiveSection("allCourses");
       } finally {
         setLoading(false);
