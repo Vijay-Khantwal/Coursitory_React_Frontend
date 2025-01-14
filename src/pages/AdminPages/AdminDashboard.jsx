@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header.jsx";
 import Footer from "../../components/Footer.jsx";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
+import NotFound from "../404ErrorPage/NotFound.jsx";
 
 const CourseCardAdmin = ({ course, onClick, isSelected }) => {
   const renderStars = (rating) => {
@@ -61,22 +61,23 @@ const AdminDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [isVideoForm, setIsVideoForm] = useState(true);
+  if (!localStorage.getItem("adminToken")) {
+    console.log("No authToken found : Please Login as an admin!");
+    return <NotFound />;
+  }
 
   useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const allCoursesResponse = await fetch(
-          `${import.meta.env.VITE_API_URL}/get/courses`
-        );
-        const allCoursesData = await allCoursesResponse.json();
-        setCourses(allCoursesData);
-      } catch (error) {
-        console.error("Error fetching courses:", error);
-      }
-    };
+  const fetchCourses = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/get/courses`);
+      setCourses(response.data);
+    } catch (error) {
+      console.error("Error fetching courses:", error);
+    }
+  };
 
-    fetchCourses();
-  }, []);
+  fetchCourses();
+}, []);
 
   const handleTagChange = (index, value) => {
     const updatedTags = [...tags];

@@ -1,15 +1,17 @@
-import CourseDetails from './pages/CourseDetails';
 import { createBrowserRouter } from 'react-router-dom';
-import VideoPage from './pages/VideoPage';
+import VideoPage from './pages/VideoPage/VideoPage';
 import Login from './pages/auth/Login';
 import Signup from './pages/auth/Singup';
 import Landing from './pages/Landing/Landing';
 import CoursePage from './pages/Courses/CoursePage';
 import AdminDashboard from './pages/AdminPages/AdminDashboard';
+import NotFound from './pages/404ErrorPage/NotFound';
+import CourseDetails from './pages/Courses/CourseDetails';
+
 const routes = createBrowserRouter([
     {
         path: '/',
-        element: <Login />
+        element: <Landing />
     },
     {
         path: '/login',
@@ -38,6 +40,10 @@ const routes = createBrowserRouter([
     {
         path:'/admin/dashboard',
         element : <AdminDashboard/>
+    },
+    {
+        path: '*',
+        element: <NotFound />
     },
 ]);
 

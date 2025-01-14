@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
 import Header from "../../components/Header.jsx";
 import CourseCard from "../../components/CourseCard.jsx";
-import toast from "react-hot-toast";
 import Footer from "../../components/Footer.jsx";
 
 const CoursePage = () => {
@@ -20,28 +20,32 @@ const CoursePage = () => {
     }
   }, [location]);
 
-  useEffect(() => {
-    const fetchCourses = async () => {
-      const token = localStorage.getItem("token");
-      setLoading(true);
 
-      try {
-        // First fetch all courses
-        const allCoursesResponse = await fetch(`${import.meta.env.VITE_API_URL}/get/courses`);
-        const allCoursesData = await allCoursesResponse.json();
-        setAllCourses(allCoursesData);
+useEffect(() => {
+  const fetchCourses = async () => {
+    const token = localStorage.getItem("token");
+    setLoading(true);
 
-        // Then fetch enrolled courses if token exists
-        if (token) {
-          const enrolledResponse = await fetch(`${import.meta.env.VITE_API_URL}/user/get/courses`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
+    try {
+      // First fetch all courses
+      const allCoursesResponse = await axios.get(`${import.meta.env.VITE_API_URL}/get/courses`);
+      setAllCourses(allCoursesResponse.data);
+
+      // Then fetch enrolled courses if token exists
+      if (token) {
+        try {
+          const enrolledResponse = await axios.get(
+            `${import.meta.env.VITE_API_URL}/user/get/courses`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
 
           if (enrolledResponse.status === 401) {
             setIsLogged(false);
-            localStorage.removeItem('isLogged');
+            localStorage.removeItem("isLogged");
             setActiveSection("allCourses");
             setEnrolledCourses([]);
             return;
@@ -53,31 +57,45 @@ const CoursePage = () => {
             return;
           }
 
-          const enrolledData = await enrolledResponse.json();
-          setEnrolledCourses(enrolledData);
-        } else {
+          setEnrolledCourses(enrolledResponse.data);
+        } catch (enrolledError) {
+          // Handle any error in enrolled courses fetch
+          console.error("Error fetching enrolled courses:", enrolledError);
           setIsLogged(false);
-          localStorage.removeItem('isLogged');
           setActiveSection("allCourses");
         }
-      } catch (error) {
+      } else {
         setIsLogged(false);
+        localStorage.removeItem("isLogged");
         setActiveSection("allCourses");
-      } finally {
-        setLoading(false);
       }
-    };
+    } catch (error) {
+      setIsLogged(false);
+      setActiveSection("allCourses");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchCourses();
-  }, [navigate]);
+  fetchCourses();
+}, [navigate]);
+
 
   return (
     <>
       <Header />
       <div className="w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 py-8">
         <h1 className="text-4xl font-bold text-center text-white">
-          Welcome to {name}{" "}
-          <span className="text-yellow-300">Coursitory</span>
+          Welcome to{" "}
+          <a
+            href="https://www.linkedin.com/in/vijay-khantwal/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-yellow-300 transition-colors duration-300"
+          >
+            {name}
+          </a>{" "}
+          <span>Coursitory</span>
         </h1>
       </div>
       <div className="min-h-screen bg-gray-50 py-8">
@@ -152,16 +170,10 @@ const CoursePage = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 xl:grid-cols-3 justify-items-center">
                     {activeSection === "allCourses"
                       ? allCourses.map((course, index) => (
-                          <CourseCard
-                            key={index}
-                            course={course}
-                          />
+                          <CourseCard key={index} course={course} />
                         ))
                       : enrolledCourses.map((course, index) => (
-                          <CourseCard
-                            key={index}
-                            course={course}
-                          />
+                          <CourseCard key={index} course={course} />
                         ))}
                   </div>
                 </div>
@@ -170,7 +182,7 @@ const CoursePage = () => {
           )}
         </div>
       </div>
-      <Footer/>
+      <Footer />
     </>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/icon_3_white.png";
+import axios from "axios";
 
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 
@@ -12,11 +13,12 @@ const CourseCard = ({ course, enrolled }) => {
   useEffect(() => {
     const fetchImage = async () => {
       try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/get/image/${course.thumbnail}`
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/get/image/${course.thumbnail}`,
+          { responseType: "json" }
         );
-        const data = await response.json();
-        setImageData(`data:${data.type};base64,${data.data}`);
+        const { type, data } = response.data;
+        setImageData(`data:${type};base64,${data}`);
       } catch (error) {
         console.error("Error fetching image:", error);
       } finally {

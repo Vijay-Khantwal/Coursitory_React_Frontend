@@ -1,11 +1,16 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
-import VideoPlayer from "./VideoPlayer";
-import Header from "../components/Header.jsx";
-import Footer from "../components/Footer.jsx";
+import VideoPlayer from "./components/VideoPlayer.jsx";
+import Header from "../../components/Header.jsx";
+import Footer from "../../components/Footer.jsx";
+import NotFound from "../404ErrorPage/NotFound.jsx";
 
 const VideoPage = () => {
   const location = useLocation();
+  if (!location.state) {
+    console.log("No state found : Video data missing!");
+    return <NotFound />;
+  }
   const { courseId, video, thumbnailSource } = location.state;
   return (
     <>

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
-import Header from "../components/Header";
+import axios from "axios";
+import Header from "../../components/Header";
 import toast from "react-hot-toast";
-import logo from "../assets/icon_3_white.png";
-import Footer from "../components/Footer";
+import logo from "../../assets/icon_3_white.png";
+import Footer from "../../components/Footer";
+import NotFound from "../404ErrorPage/NotFound";
 
 const CourseMaterial = ({
   course,
@@ -157,12 +159,17 @@ const ReadingSections = ({ pdfList, loading, isEnrolled }) => {
 
 const CourseDetails = () => {
   const location = useLocation();
+  if (!location.state) {
+    console.log("No state found : course data missing!");
+    return <NotFound />;
+  }
   const {
     course,
     enrolled,
     videoMetadata: savedMetadata,
     thumbnails: savedThumbnails,
   } = location.state?.courseState || {
+    // location.state.courseState is the state passed from CoursePage.jsx
     course: location.state.course,
     enrolled: location.state.enrolled,
   };
@@ -189,26 +196,22 @@ const CourseDetails = () => {
 
       setIsEnrolling(true);
       try {
-        const response = await fetch(
+        const response = await axios.get(
           `${import.meta.env.VITE_API_URL}/user/check/enrollment/${course.id}`,
           {
-            method: "GET",
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
         );
-        if (response.ok) {
-          const data = await response.json();
-          setIsEnrolled(data);
-        } else {
-          localStorage.removeItem("token");
-          localStorage.removeItem("isLogged");
-        }
+        setIsEnrolled(response.data);
       } catch (error) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("isLogged");
       } finally {
         setIsEnrolling(false);
       }
+      
     };
 
     checkEnrollment();
@@ -216,86 +219,82 @@ const CourseDetails = () => {
   const handleEnroll = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
+      toast.error("Please login to enroll in the course");
       navigate("/register");
       return;
     }
     try {
-      const response = await fetch(
+      const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/user/enroll/${course.id}`,
+        {},
         {
-          method: "POST",
-          credentials: "include",
           headers: {
             Authorization: `Bearer ${token}`,
           },
+          withCredentials: true,
         }
       );
-      if (!response.ok) {
-        if (response.status === 401) {
-          toast.error("Please login to enroll in the course");
-        } else {
-          throw new Error("Failed to enroll");
-        }
-      } else {
-        toast.success("Successfully enrolled in course");
-        setIsEnrolled(true);
-      }
+      toast.success("Successfully enrolled in course");
+      setIsEnrolled(true);
     } catch (error) {
-      console.error("Error enrolling:", error);
-      toast.error("Please login to enroll in the course");
+      if (error.response && error.response.status === 401) {
+        toast.error("Please login to enroll in the course");
+      } else {
+        console.error("Error enrolling:", error);
+        toast.error("Failed to enroll");
+      }
       navigate("/register");
-    }
+    }    
   };
 
-  useEffect(() => {
-    const fetchVideoMetadata = async () => {
-      try {
-        const metadataPromises = course.videoList.map((videoId) =>
-          fetch(`${import.meta.env.VITE_API_URL}/get/metadata/${videoId}`).then(
-            (response) => response.json()
-          )
-        );
-        const metadata = await Promise.all(metadataPromises);
-        setVideoMetadata(metadata);
+useEffect(() => {
+  const fetchVideoMetadata = async () => {
+    try {
+      // Fetch metadata for all videos concurrently
+      const metadataPromises = course.videoList.map((videoId) =>
+        axios
+          .get(`${import.meta.env.VITE_API_URL}/get/metadata/${videoId}`)
+          .then((response) => response.data)
+      );
+      const metadata = await Promise.all(metadataPromises);
+      setVideoMetadata(metadata);
 
-        // Fetch thumbnails only once
-        metadata.forEach(async (video) => {
-          if (!video.thumbnail) {
+      // Fetch thumbnails only once
+      metadata.forEach(async (video) => {
+        if (!video.thumbnail) {
+          setThumbnails((prev) => ({
+            ...prev,
+            [video.thumbnail]: logo,
+          }));
+        } else {
+          try {
+            const response = await axios.get(
+              `${import.meta.env.VITE_API_URL}/get/image/${video.thumbnail.toString()}`
+            );
+            setThumbnails((prev) => ({
+              ...prev,
+              [video.thumbnail]: `data:${response.data.type};base64,${response.data.data}`,
+            }));
+          } catch (error) {
+            console.error("Error fetching thumbnail:", error);
+            // Set logo as fallback if thumbnail fetch fails
             setThumbnails((prev) => ({
               ...prev,
               [video.thumbnail]: logo,
             }));
-          } else {
-            try {
-              const response = await fetch(
-                `${
-                  import.meta.env.VITE_API_URL
-                }/get/image/${video.thumbnail.toString()}`
-              );
-              const imageData = await response.json();
-              setThumbnails((prev) => ({
-                ...prev,
-                [video.thumbnail]: `data:${imageData.type};base64,${imageData.data}`,
-              }));
-            } catch (error) {
-              console.error("Error fetching thumbnail:", error);
-              // Set logo as fallback if thumbnail fetch fails
-              setThumbnails((prev) => ({
-                ...prev,
-                [video.thumbnail]: logo,
-              }));
-            }
           }
-        });
-      } catch (error) {
-        console.error("Error fetching video metadata:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+        }
+      });
+    } catch (error) {
+      console.error("Error fetching video metadata:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchVideoMetadata();
-  }, [course.videoList]);
+  fetchVideoMetadata();
+}, [course.videoList]);
+
 
   const renderStars = (rating) => {
     const stars = [];

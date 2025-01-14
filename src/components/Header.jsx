@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/icon_3_blue.png";
 import Search from "../pages/Search/Search.jsx"; // Import the Search component
 import toast from "react-hot-toast";
@@ -16,17 +16,16 @@ const Header = () => {
     localStorage.getItem("searchQuery") || ""
   );
 
-  
   const handleSearch = (query) => {
-    if(query.length < 3){
-      toast('Please enter atleast 3 characters to search', {
-        icon: 'ℹ️',position: "top-right",
+    if (query.length < 3) {
+      toast("Please enter atleast 3 characters to search", {
+        icon: "ℹ️",
+        position: "top-right",
       });
       return;
     }
     setSearchQuery(query);
     setIsSearchOpen(true);
-    
   };
 
   const handleLogout = () => {
@@ -53,7 +52,10 @@ const Header = () => {
     <header className="bg-white shadow-lg sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <div className="flex items-center ml-[-1rem]">
+          <Link
+            to="/"
+            className="flex items-center ml-[-1rem] hover:cursor-pointer"
+          >
             <img
               src={logo}
               alt="Coursitory Logo"
@@ -62,7 +64,7 @@ const Header = () => {
             <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent ml-3">
               Coursitory
             </div>
-          </div>
+          </Link>
 
           <div className="hidden md:block flex-1 max-w-2xl mx-8">
             <div className="relative">
