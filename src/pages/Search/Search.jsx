@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import SearchCourseCard from "../../components/SearchCourseCard.jsx";
 import { FaSpinner } from "react-icons/fa";
+import axios from "axios";
 
 const Search = ({
   searchPattern,
@@ -14,41 +15,38 @@ const Search = ({
   const [isLoading, setIsLoading] = useState(false);
   const blurRegionRef = useRef(null);
 
-  useEffect(() => {
-    const fetchResults = async () => {
-      if (
-        !searchPattern ||
-        searchPattern === localStorage.getItem("searchQuery")
-      ) {
-        const cachedResults = localStorage.getItem("lastResults");
-        if (cachedResults) {
-          setCourseResults(JSON.parse(cachedResults));
-        }
-        return;
+useEffect(() => {
+  const fetchResults = async () => {
+    if (
+      !searchPattern ||
+      searchPattern === localStorage.getItem("searchQuery")
+    ) {
+      const cachedResults = localStorage.getItem("lastResults");
+      if (cachedResults) {
+        setCourseResults(JSON.parse(cachedResults));
       }
-      setIsLoading(true);
-      try {
-        const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/search/course/${searchPattern}`
-        );
-        if (res.ok) {
-          const courseData = await res.json();
-          setCourseResults(courseData);
-          setLastResults(courseData);
-          localStorage.setItem("searchQuery", searchPattern);
-          localStorage.setItem("lastResults", JSON.stringify(courseData));
-        } else {
-          setCourseResults({ byDesc: [], byTags: [], byTitle: [] });
-        }
-      } catch (error) {
-        console.error("Error fetching search results:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/search/course/${searchPattern}`
+      );
+      setCourseResults(res.data);
+      setLastResults(res.data);
+      localStorage.setItem("searchQuery", searchPattern);
+      localStorage.setItem("lastResults", JSON.stringify(res.data));
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+      setCourseResults({ byDesc: [], byTags: [], byTitle: [] });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    fetchResults();
-  }, [searchPattern, setLastResults]);
+  fetchResults();
+}, [searchPattern, setLastResults]);
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
