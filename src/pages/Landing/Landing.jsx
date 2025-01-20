@@ -135,22 +135,22 @@ const LandingPage = () => {
             <h2 className="text-3xl font-bold text-center mb-10">
               How to Get Started
             </h2>
-            <div className="flex justify-center items-center">
-              <div className="flex flex-col items-center mx-4">
+            <div className="flex justify-center">
+              <div className="flex flex-col items-center mx-2">
                 <div className="bg-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center mb-4">
                   1
                 </div>
                 <p className="text-center font-medium">Make an Account</p>
               </div>
-              <div className="h-1 bg-gray-300 flex-1 mx-4"></div>
-              <div className="flex flex-col items-center mx-4">
+              <div className="h-1 translate-y-8 bg-gray-300 flex-1 mx-4"></div>  
+              <div className="flex flex-col items-center mx-2 ">
                 <div className="bg-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center mb-4">
                   2
                 </div>
                 <p className="text-center font-medium">Enroll into a Course</p>
               </div>
-              <div className="h-1 bg-gray-300 flex-1 mx-4"></div>
-              <div className="flex flex-col items-center mx-4">
+              <div className="h-1 translate-y-8 bg-gray-300 flex-1 mx-4"></div>
+              <div className="flex flex-col items-center mx-2">
                 <div className="bg-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center mb-4">
                   3
                 </div>

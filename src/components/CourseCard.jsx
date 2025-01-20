@@ -34,8 +34,8 @@ const CourseCard = ({ course, enrolled }) => {
     }
   }, [course.thumbnail]);
 
-  const handleCourseClick = (course, enrolled) => {
-    navigate("/courseDetails", { state: { course, enrolled } });
+  const handleCourseClick = (course) => {
+    navigate(`/courseDetails/${course.id}`);
   };
 
   const renderStars = (rating) => {

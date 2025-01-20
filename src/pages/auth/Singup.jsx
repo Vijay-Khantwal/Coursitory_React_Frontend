@@ -76,11 +76,11 @@ const Signup = () => {
   const passwordsMatch = formData.password === formData.confirmPassword;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className=" min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="flex gap-8">
         <form
           onSubmit={handleSubmit}
-          className="w-[500px] h-[600px] flex flex-col justify-center space-y-8 bg-white p-8 rounded-lg shadow-md relative"
+          className="  sm:w-[500px] sm:h-[600px]  flex flex-col justify-center space-y-8 bg-white p-8 rounded-lg shadow-md relative"
         >
           <div className="flex flex-col items-center gap-2">
             <div className="flex items-center gap-2">
