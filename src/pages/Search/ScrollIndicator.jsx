@@ -6,7 +6,7 @@ const ScrollIndicator = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setVisible(false); // Hide the indicator after 3 seconds
-    }, 1500);
+    }, 3000);
 
     return () => clearTimeout(timer); // Clear timer on component unmount
   }, []);

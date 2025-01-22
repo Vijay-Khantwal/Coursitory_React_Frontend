@@ -9,3 +9,23 @@
 .no-scrollbar::-webkit-scrollbar {
   display: none; /* Chrome, Safari, and Edge */
 }
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Global styles to disable scrolling while preserving scrollbar space */
+body.no-scroll {
+  overflow: hidden;
+  padding-right: 17px;
+}

@@ -160,7 +160,7 @@ const LandingPage = () => {
           </div>
         </section>
 
-        <section className="bg-blue-600  text-white py-16  bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 py-8">
+        <section className="bg-blue-600  text-white bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 py-8">
           <div className="max-w-7xl mx-auto px-4 text-center">
             <h2 className="text-3xl font-bold mb-6">
               Ready to Get Started with{" "}

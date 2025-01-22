@@ -75,7 +75,7 @@ const Search = ({ searchPattern, setIsSearchOpen }) => {
 
   return (
     <div
-      className={`${isLogged ?"left-[26vw] -translate-x-1" : "left-[25vw] -translate-x-2" } absolute bg-white shadow-lg rounded-md w-[50vw] max-w-2xl p-4 max-h-[50vh]  top-[60px] overflow-y-scroll overflow-x-hidden hidden md:block no-scrollbar`}
+      className={`${isLogged ?"left-[26vw] -translate-x-1" : "left-[25vw] -translate-x-2" } absolute bg-white shadow-lg rounded-md w-[50vw] max-w-2xl p-4 max-h-[50vh]  top-[60px] overflow-y-scroll overflow-x-hidden hidden lg:block no-scrollbar`}
       ref={blurRegionRef}
     >
       {isLoading ? (

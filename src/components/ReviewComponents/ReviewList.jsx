@@ -7,6 +7,7 @@ const ReviewList = ({ courseId }) => {
   const [reviews, setReviews] = useState([]);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+  const [showFull, setShowFull] = useState(false);
 
   useEffect(() => {
     if (!courseId) return;
@@ -15,7 +16,7 @@ const ReviewList = ({ courseId }) => {
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL}/reviews/get/${courseId}?page=${page}&size=3` // Page size set to 2
         );
-        setHasMore(response.data.page.number + 1 !== response.data.page.totalPages);
+        setHasMore(response.data.page.number + 1 < response.data.page.totalPages);
         setReviews(response.data._embedded.reviewList);
       } catch (error) {
         console.error("Error fetching reviews:", error);
@@ -61,26 +62,22 @@ const ReviewList = ({ courseId }) => {
 
 const ReviewComment = ({ comment }) => {
   const [showFull, setShowFull] = useState(false);
+  const MAX_LENGTH = 400;
+  const displayedComment = showFull ? comment : comment.slice(0, MAX_LENGTH) + (comment.length > MAX_LENGTH ? "..." : "");
 
   return (
-    <div>
-      <p
-        className={`mt-2 text-gray-700 break-words ${
-          showFull ? "" : "line-clamp-3"
-        }`}
-      >
-        {comment}
-      </p>
-      {comment.split("\n").length > 3 && (
-        <button
-          onClick={() => setShowFull(!showFull)}
-          className="text-blue-800 mt-2 hover:underline"
-        >
-          {showFull ? "Read Less" : "Read More"}
-        </button>
-      )}
-    </div>
-  );
+      <div>
+        <p className="mt-2 text-gray-700 break-words">{displayedComment}</p>
+        {comment.length >MAX_LENGTH && (
+          <button
+            onClick={() => setShowFull(!showFull)}
+            className="text-blue-800 mt-2 hover:underline"
+          >
+            {showFull ? "Read Less" : "Read More"}
+          </button>
+        )}
+      </div>
+    );
 };
 
 const StarRating = ({ rating }) => {

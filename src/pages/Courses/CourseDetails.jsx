@@ -8,6 +8,7 @@ import logo from "../../assets/icon_3_white.png";
 import Footer from "../../components/Footer";
 import NotFound from "../404ErrorPage/NotFound";
 import CourseReview from "../../components/ReviewComponents/CourseReview";
+import PaymentCard from "./PaymentPopup/PaymentCard";
 
 const CourseMaterial = ({
   course,
@@ -164,7 +165,7 @@ const CourseDetails = () => {
   });
   const [activeTab, setActiveTab] = useState("courseMaterial");
   const [isEnrolled, setIsEnrolled] = useState(false);
-  const [isEnrolling, setIsEnrolling] = useState(false);
+  const [isEnrolling, setIsEnrolling] = useState(true);
   const [videoMetadata, setVideoMetadata] = useState([]);
   const [thumbnails, setThumbnails] = useState({});
   const [loading, setLoading] = useState(true);
@@ -191,7 +192,8 @@ const CourseDetails = () => {
   useEffect(() => {
     const checkEnrollment = async () => {
       const token = localStorage.getItem("token");
-      if (!token) return;
+      console.log("here "+ course.id);
+      if(!course.id)return; 
 
       setIsEnrolling(true);
       try {
@@ -214,35 +216,17 @@ const CourseDetails = () => {
 
     checkEnrollment();
   }, [isEnrolled, course.id]);
+
+  const [isOpen,setIsOpen] = useState(false);
   const handleEnroll = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
       toast.error("Please login to enroll in the course");
-      navigate("/register");
+      navigate("/login");
       return;
     }
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/user/enroll/${course.id}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
-      );
-      toast.success("Successfully enrolled in course");
-      setIsEnrolled(true);
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        toast.error("Please login to enroll in the course");
-      } else {
-        console.error("Error enrolling:", error);
-        toast.error("Failed to enroll");
-      }
-      navigate("/register");
-    }
+    setIsOpen(true);
+    setShowPaymentCard(true);
   };
 
   useEffect(() => {
@@ -311,10 +295,21 @@ const CourseDetails = () => {
     return stars;
   };
 
+  const [showPaymentCard, setShowPaymentCard] = useState(false);
+
   return (
     <>
       {" "}
       <Header />
+      <div>
+        {showPaymentCard && (
+          <PaymentCard
+            course={course}
+            isOpen={isOpen}
+            onClose={() => setShowPaymentCard(false)}
+          />
+        )}
+      </div>
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="container mx-auto px-4">
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
@@ -445,7 +440,10 @@ const CourseDetails = () => {
               <h1 className="text-3xl font-medium w-full p-4 text-gray-900 rounded-md">
                 User Rating and Reviews
               </h1>
-              <CourseReview courseId={course.id} isEnrolled = {isEnrolled}  ></CourseReview>
+              <CourseReview
+                courseId={course.id}
+                isEnrolled={isEnrolled}
+              ></CourseReview>
             </div>
           </div>
         </div>

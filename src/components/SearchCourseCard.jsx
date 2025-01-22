@@ -12,7 +12,7 @@ const SearchCourseCard = ({ course, enrolled, setIsSearchOpen }) => {
   return (
     <div
       onClick={() => handleCourseClick(course, enrolled)}
-      className="bg-white border-b-2 overflow-hidden cursor-pointer transform  transition-all duration-300 w-full p-4"
+      className="bg-white border-black border-b overflow-hidden cursor-pointer transform  transition-all duration-300 w-full p-4"
     >
       <div className="flex flex-col">
         {/* Title */}
