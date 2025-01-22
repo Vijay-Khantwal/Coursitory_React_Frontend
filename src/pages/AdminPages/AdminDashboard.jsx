@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 import NotFound from "../404ErrorPage/NotFound.jsx";
+import Button from "../../components/Button.jsx";
 
 const CourseCardAdmin = ({ course, onClick, isSelected }) => {
   const renderStars = (rating) => {
@@ -26,7 +27,11 @@ const CourseCardAdmin = ({ course, onClick, isSelected }) => {
     <div
       onClick={() => onClick(course)}
       className={` rounded-xl shadow-lg overflow-hidden cursor-pointer transform hover:scale-105 transition-all duration-300 w-full flex
-            ${isSelected ? "ring-2 ring-blue-500 scale-105 shadow-xl bg-blue-50" : "bg-white"}`}
+            ${
+              isSelected
+                ? "ring-2 ring-blue-500 scale-105 shadow-xl bg-blue-50"
+                : "bg-white"
+            }`}
     >
       <div className="p-4 flex-1">
         <div className="flex items-start justify-between mb-2">
@@ -61,23 +66,28 @@ const AdminDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [isVideoForm, setIsVideoForm] = useState(true);
+  const [uploading, setUploading] = useState(false);
   if (!localStorage.getItem("adminToken")) {
     console.log("No authToken found : Please Login as an admin!");
     return <NotFound />;
+  } else {
+    localStorage.setItem("isLogged", true);
   }
 
   useEffect(() => {
-  const fetchCourses = async () => {
-    try {
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/get/courses`);
-      setCourses(response.data);
-    } catch (error) {
-      console.error("Error fetching courses:", error);
-    }
-  };
+    const fetchCourses = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/get/courses`
+        );
+        setCourses(response.data);
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      }
+    };
 
-  fetchCourses();
-}, []);
+    fetchCourses();
+  }, []);
 
   const handleTagChange = (index, value) => {
     const updatedTags = [...tags];
@@ -97,82 +107,89 @@ const AdminDashboard = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const form = e.target;
-    const formData = new FormData();
+    setUploading(true);
+    try {
+      const form = e.target;
+      const formData = new FormData();
 
-    const title = form.title.value;
-    const description = form.description.value;
-    const file = form.thumbnail.files[0];
-    const validTags = tags.filter((tag) => tag.trim() !== "");
+      const title = form.title.value;
+      const description = form.description.value;
+      const file = form.thumbnail.files[0];
+      const validTags = tags.filter((tag) => tag.trim() !== "");
 
-    // Check if title and description are provided
-    if (!title || !description) {
-      toast.error("Title and description are required");
-      return;
-    }
+      // Check if title and description are provided
+      if (!title || !description) {
+        toast.error("Title and description are required");
+        return;
+      }
 
-    // Check title length
-    if (title.length < 5) {
-      toast.error("Title too short");
-      return;
-    }
-    if (title.length > 40) {
-      toast.error("Title too large");
-      return;
-    }
+      // Check title length
+      if (title.length < 5) {
+        toast.error("Title too short");
+        return;
+      }
+      if (title.length > 40) {
+        toast.error("Title too large");
+        return;
+      }
 
-    // Check description length
-    if (description.length < 5) {
-      toast.error("Description too short");
-      return;
-    }
-    if(description.length > 1500) {
+      // Check description length
+      if (description.length < 5) {
+        toast.error("Description too short");
+        return;
+      }
+      if (description.length > 1500) {
         toast.error("Description too large");
         return;
-    }
-    
-
-    // File type validation for thumbnail
-    if (file) {
-      const allowedImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-      if (!allowedImageTypes.includes(file.type)) {
-        toast.error('Please upload a valid image file (JPEG, PNG, GIF, or WEBP)');
-        return;
       }
-      const maxSize = 5 * 1024 * 1024; // 5MB in bytes
-      if (file.size > maxSize) {
-        toast.error('Image size should be less than 5MB');
-        return;
+
+      // File type validation for thumbnail
+      if (file) {
+        const allowedImageTypes = [
+          "image/jpeg",
+          "image/png",
+          "image/gif",
+          "image/webp",
+        ];
+        if (!allowedImageTypes.includes(file.type)) {
+          toast.error(
+            "Please upload a valid image file (JPEG, PNG, GIF, or WEBP)"
+          );
+          return;
+        }
+        const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+        if (file.size > maxSize) {
+          toast.error("Image size should be less than 5MB");
+          return;
+        }
       }
-    }
 
-    // Append data to FormData
-    formData.append("title", title);
-    formData.append("description", description);
-    formData.append("tags", validTags);
+      // Append data to FormData
+      formData.append("title", title);
+      formData.append("description", description);
+      formData.append("tags", validTags);
 
-    if (file) {
-      formData.append("file", file);
-    }
+      if (file) {
+        formData.append("file", file);
+      }
 
-    toast.promise( 
-
-      axios.post(
+      toast.promise(
+        axios.post(
           `${import.meta.env.VITE_API_URL}/admin/create/Course`,
           formData,
           {
-              headers: {
-                  Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-                  "Content-Type": "multipart/form-data",
-              },
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+              "Content-Type": "multipart/form-data",
+            },
           }
-      ),
-      {
-          loading: 'Creating your Course...',
+        ),
+        {
+          loading: "Creating your Course...",
           success: () => {
-              setIsModalOpen(false);
-              window.location.reload();
-              return 'Course created successfully';
+            setIsModalOpen(false);
+            window.location.reload();
+            return "Course created successfully";
           },
           error: (error) => {
             console.log(error);
@@ -181,17 +198,22 @@ const AdminDashboard = () => {
             }
             return <b>Something went wrong! Login Again</b>;
           },
-      }
-  );
-  
-};
-
+          finally: () => setUploading(false),
+        }
+      );
+    } catch {
+      console.log("Error in creating course");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleCardClick = (course) => {
     setSelectedCourse(course);
   };
 
   const handleVideoSubmit = async (e) => {
+    setUploading(true);
     e.preventDefault();
     const formData = new FormData();
     formData.append("file", e.target.video.files[0]);
@@ -200,104 +222,127 @@ const AdminDashboard = () => {
     if (e.target.thumbnail.files[0]) {
       formData.append("thumbnail", e.target.thumbnail.files[0]);
     }
-    
+
     if (e.target.video.files[0]) {
-      const allowedVideoTypes = ['video/mp4', 'video/webm', 'video/quicktime'];
+      const allowedVideoTypes = ["video/mp4", "video/webm", "video/quicktime"];
       if (!allowedVideoTypes.includes(e.target.video.files[0].type)) {
-        toast.error('Please upload a valid video file (MP4, WebM, or MOV)');
+        toast.error("Please upload a valid video file (MP4, WebM, or MOV)");
         return;
       }
       const maxVideoSize = 200 * 1024 * 1024; // 200MB in bytes
       if (e.target.video.files[0].size > maxVideoSize) {
-        toast.error('Video size should be less than 200MB');
+        toast.error("Video size should be less than 200MB");
         return;
       }
     }
     if (e.target.thumbnail.files[0]) {
-      const allowedImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+      const allowedImageTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/gif",
+        "image/webp",
+      ];
       if (!allowedImageTypes.includes(e.target.thumbnail.files[0].type)) {
-        toast.error('Please upload a valid image file (JPEG, PNG, GIF, or WEBP)');
+        toast.error(
+          "Please upload a valid image file (JPEG, PNG, GIF, or WEBP)"
+        );
         return;
       }
       const maxImageSize = 5 * 1024 * 1024; // 5MB in bytes
       if (e.target.thumbnail.files[0].size > maxImageSize) {
-        toast.error('Image size should be less than 5MB');
+        toast.error("Image size should be less than 5MB");
         return;
       }
     }
 
-
     try {
       const adminToken = localStorage.getItem("adminToken");
       await toast.promise(
-        axios.post(
-          `${import.meta.env.VITE_API_URL}/admin/upload_video/${selectedCourse.id}`,
-          formData,
-          {
-            headers: {
-              Authorization: `Bearer ${adminToken}`,
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        ).catch(error => {
-          if (error.response?.status === 401) {
-              window.location.href = '/login';
-          }
-          throw error;
-      }),
+        axios
+          .post(
+            `${import.meta.env.VITE_API_URL}/admin/upload_video/${
+              selectedCourse.id
+            }`,
+            formData,
+            {
+              headers: {
+                Authorization: `Bearer ${adminToken}`,
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          )
+          .catch((error) => {
+            if (error.response?.status === 401) {
+              window.location.href = "/login";
+            }
+            throw error;
+          }),
         {
-          loading: 'Uploading video...',
-          success: 'Video uploaded successfully 👌',
-          error: 'Error uploading video 🤯'
+          loading: "Uploading video...",
+          success: "Video uploaded successfully 👌",
+          error: "Error uploading video 🤯 Login Again",
         }
       );
     } catch (error) {
-      console.error(error); // Optional: log the error for debugging
+      console.error(error);
+    } finally {
+      setUploading(false);
     }
   };
 
   const handlePdfSubmit = async (e) => {
     e.preventDefault();
+    setUploading(true);
     const formData = new FormData();
     formData.append("file", e.target.pdf.files[0]);
     formData.append("title", e.target.title.value);
 
     if (e.target.pdf.files[0]) {
-      const allowedPdfTypes = ['application/pdf'];
+      const allowedPdfTypes = ["application/pdf"];
       if (!allowedPdfTypes.includes(e.target.pdf.files[0].type)) {
-        toast.error('Please upload a valid PDF file');
+        toast.error("Please upload a valid PDF file");
         return;
       }
       const maxPdfSize = 10 * 1024 * 1024; // 10MB in bytes
       if (e.target.pdf.files[0].size > maxPdfSize) {
-        toast.error('PDF size should be less than 10MB');
+        toast.error("PDF size should be less than 10MB");
         return;
       }
     }
 
-    toast.promise(
-      axios.post(
-          `${import.meta.env.VITE_API_URL}/admin/upload_pdf/${selectedCourse.id}`,
-          formData,
-          {
+    try {
+      const adminToken = localStorage.getItem("adminToken");
+      await toast.promise(
+        axios
+          .post(
+            `${import.meta.env.VITE_API_URL}/admin/upload_pdf/${
+              selectedCourse.id
+            }`,
+            formData,
+            {
               headers: {
-                  Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-                  "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${adminToken}`,
+                "Content-Type": "multipart/form-data",
               },
-          }
-      ).catch(error => {
-        if (error.response?.status === 401) {
-            window.location.href = '/login';
+            }
+          )
+          .catch((error) => {
+            if (error.response?.status === 401) {
+              window.location.href = "/login";
+            }
+            throw error;
+          }),
+        {
+          loading: "Uploading PDF...",
+          success: "PDF uploaded successfully 👌",
+          error: "Error uploading PDF 🤯",
         }
-        throw error;
-    }),
-      {
-          loading: 'Uploading PDF...',
-          success: 'PDF uploaded successfully',
-          error: 'Error uploading PDF'
-      }
-  );
-  
+      );
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -315,6 +360,7 @@ const AdminDashboard = () => {
       <div className="min-h-screen bg-gray-50 py-8 px-4 lg:px-8">
         <div className="max-w-[1400px] mx-auto">
           <button
+            disabled={uploading}
             className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 shadow-md mb-8"
             onClick={() => setIsModalOpen(true)}
           >
@@ -342,7 +388,9 @@ const AdminDashboard = () => {
               <div className="bg-white rounded-lg shadow-lg p-6 sticky top-20">
                 {selectedCourse ? (
                   <>
-                  <div className="flex justify-center align-middle bg-blue-200 rounded-full mb-5 p-2">Upload Area</div>
+                    <div className="flex justify-center align-middle bg-blue-200 rounded-full mb-5 p-2">
+                      Upload Area
+                    </div>
                     <h2 className="text-xl font-bold mb-4">
                       {selectedCourse.title}
                     </h2>
@@ -405,12 +453,13 @@ const AdminDashboard = () => {
                           placeholder="Description"
                           className="w-full border rounded-lg p-2 min-h-[100px]"
                         />
-                        <button
-                          type="submit"
-                          className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                        <Button
+                          type={"submit"}
+                          onSubmit={handleVideoSubmit}
+                          loading={uploading}
                         >
-                          Upload Video
-                        </button>
+                          {uploading ? "Uploading..." : "Upload Video"}
+                        </Button>
                       </form>
                     ) : (
                       <form onSubmit={handlePdfSubmit} className="space-y-4">
@@ -433,12 +482,13 @@ const AdminDashboard = () => {
                           className="w-full border rounded-lg p-2"
                           required
                         />
-                        <button
-                          type="submit"
-                          className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                        <Button
+                          type={"submit"}
+                          onSubmit={handlePdfSubmit}
+                          loading={uploading}
                         >
-                          Upload PDF
-                        </button>
+                          {uploading ? "Uploading..." : "Upload PDF"}
+                        </Button>
                       </form>
                     )}
                   </>
@@ -526,12 +576,9 @@ const AdminDashboard = () => {
                   >
                     Cancel
                   </button>
-                  <button
-                    type="submit"
-                    className="px-6 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-                  >
-                    Submit
-                  </button>
+                  <Button type={"submit"} loading={uploading}>
+                    {uploading ? "Creating Course..." : "Create Course"}
+                  </Button>
                 </div>
               </form>
             </div>

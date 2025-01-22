@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 import axios from "axios";
 import Header from "../../components/Header";
@@ -7,6 +7,8 @@ import toast from "react-hot-toast";
 import logo from "../../assets/icon_3_white.png";
 import Footer from "../../components/Footer";
 import NotFound from "../404ErrorPage/NotFound";
+import CourseReview from "../../components/ReviewComponents/CourseReview";
+import PaymentCard from "./PaymentPopup/PaymentCard";
 
 const CourseMaterial = ({
   course,
@@ -23,20 +25,14 @@ const CourseMaterial = ({
       toast.error("Please enroll in the course to view the video");
       return;
     }
-    navigate("/videoPage", {
-      state: {
-        courseId,
-        video,
-        thumbnailSource: thumbnails[video.thumbnail],
-      },
-    });
+    navigate(`/videoPage/${course.id}/${video.id}`);
   };
 
   return (
     <div className="container mx-auto">
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(course.videoList.length)].map((_, index) => (
+          {[...Array(3)].map((_, index) => (
             <div
               key={index}
               className="relative aspect-video rounded-xl shadow-lg bg-gray-200 animate-pulse transform hover:scale-105 transition-transform duration-300"
@@ -123,7 +119,7 @@ const ReadingSections = ({ pdfList, loading, isEnrolled }) => {
               className="block"
               onClick={(e) => handlePdfClick(e, pdf)}
             >
-              <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+              <div className="bg-white rounded-xl border-2 p-6 hover:shadow-xl transition-all duration-300 transform hover:scale-105">
                 <div className="flex items-center space-x-4">
                   <div className="p-3 bg-blue-100 rounded-lg">
                     <svg
@@ -158,41 +154,46 @@ const ReadingSections = ({ pdfList, loading, isEnrolled }) => {
 };
 
 const CourseDetails = () => {
-  const location = useLocation();
-  if (!location.state) {
-    console.log("No state found : course data missing!");
-    return <NotFound />;
-  }
-  const {
-    course,
-    enrolled,
-    videoMetadata: savedMetadata,
-    thumbnails: savedThumbnails,
-  } = location.state?.courseState || {
-    // location.state.courseState is the state passed from CoursePage.jsx
-    course: location.state.course,
-    enrolled: location.state.enrolled,
-  };
-
-  const [activeTab, setActiveTab] = useState("courseMaterial");
-  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
-  const [videoMetadata, setVideoMetadata] = useState(savedMetadata || []);
-  const [loading, setLoading] = useState(!savedMetadata);
-  const [thumbnails, setThumbnails] = useState(savedThumbnails || {});
-  const [isEnrolled, setIsEnrolled] = useState(enrolled || false);
-  const [isEnrolling, setIsEnrolling] = useState(false);
-
+  const { id } = useParams();
   const navigate = useNavigate();
+  const [course, setCourse] = useState({
+    videoList: [],
+    pdfList: [],
+    title: "",
+    description: "",
+    rating: "",
+  });
+  const [activeTab, setActiveTab] = useState("courseMaterial");
+  const [isEnrolled, setIsEnrolled] = useState(false);
+  const [isEnrolling, setIsEnrolling] = useState(true);
+  const [videoMetadata, setVideoMetadata] = useState([]);
+  const [thumbnails, setThumbnails] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+
+  useEffect(() => {
+    const fetchCourse = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/get/course/${id}`
+        );
+        setCourse(response.data);
+      } catch (error) {
+        if (error.response.status === 500) {
+          navigate("/404");
+        }
+        console.error("Error fetching course:", error);
+      }
+    };
+
+    fetchCourse();
+  }, [id]);
 
   useEffect(() => {
     const checkEnrollment = async () => {
-      if (enrolled) {
-        setIsEnrolled(true);
-        return;
-      }
-
       const token = localStorage.getItem("token");
-      if (!token) return;
+      console.log("here "+ course.id);
+      if(!course.id)return; 
 
       setIsEnrolling(true);
       try {
@@ -211,90 +212,73 @@ const CourseDetails = () => {
       } finally {
         setIsEnrolling(false);
       }
-      
     };
 
     checkEnrollment();
-  }, [enrolled, course.id]);
+  }, [isEnrolled, course.id]);
+
+  const [isOpen,setIsOpen] = useState(false);
   const handleEnroll = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
       toast.error("Please login to enroll in the course");
-      navigate("/register");
+      navigate("/login");
       return;
     }
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/user/enroll/${course.id}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
-      );
-      toast.success("Successfully enrolled in course");
-      setIsEnrolled(true);
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        toast.error("Please login to enroll in the course");
-      } else {
-        console.error("Error enrolling:", error);
-        toast.error("Failed to enroll");
-      }
-      navigate("/register");
-    }    
+    setIsOpen(true);
+    setShowPaymentCard(true);
   };
 
-useEffect(() => {
-  const fetchVideoMetadata = async () => {
-    try {
-      // Fetch metadata for all videos concurrently
-      const metadataPromises = course.videoList.map((videoId) =>
-        axios
-          .get(`${import.meta.env.VITE_API_URL}/get/metadata/${videoId}`)
-          .then((response) => response.data)
-      );
-      const metadata = await Promise.all(metadataPromises);
-      setVideoMetadata(metadata);
+  useEffect(() => {
+    const fetchVideoMetadata = async () => {
+      setLoading(true);
+      try {
+        // Fetch metadata for all videos concurrently
+        const metadataPromises = course.videoList.map((videoId) =>
+          axios
+            .get(`${import.meta.env.VITE_API_URL}/get/metadata/${videoId}`)
+            .then((response) => response.data)
+        );
+        const metadata = await Promise.all(metadataPromises);
+        setVideoMetadata(metadata);
 
-      // Fetch thumbnails only once
-      metadata.forEach(async (video) => {
-        if (!video.thumbnail) {
-          setThumbnails((prev) => ({
-            ...prev,
-            [video.thumbnail]: logo,
-          }));
-        } else {
-          try {
-            const response = await axios.get(
-              `${import.meta.env.VITE_API_URL}/get/image/${video.thumbnail.toString()}`
-            );
-            setThumbnails((prev) => ({
-              ...prev,
-              [video.thumbnail]: `data:${response.data.type};base64,${response.data.data}`,
-            }));
-          } catch (error) {
-            console.error("Error fetching thumbnail:", error);
-            // Set logo as fallback if thumbnail fetch fails
+        // Fetch thumbnails only once
+        metadata.forEach(async (video) => {
+          if (!video.thumbnail) {
             setThumbnails((prev) => ({
               ...prev,
               [video.thumbnail]: logo,
             }));
+          } else {
+            try {
+              const response = await axios.get(
+                `${
+                  import.meta.env.VITE_API_URL
+                }/get/image/${video.thumbnail.toString()}`
+              );
+              setThumbnails((prev) => ({
+                ...prev,
+                [video.thumbnail]: `data:${response.data.type};base64,${response.data.data}`,
+              }));
+            } catch (error) {
+              console.error("Error fetching thumbnail:", error);
+              // Set logo as fallback if thumbnail fetch fails
+              setThumbnails((prev) => ({
+                ...prev,
+                [video.thumbnail]: logo,
+              }));
+            }
           }
-        }
-      });
-    } catch (error) {
-      console.error("Error fetching video metadata:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+        });
+      } catch (error) {
+        console.error("Error fetching video metadata:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  fetchVideoMetadata();
-}, [course.videoList]);
-
+    fetchVideoMetadata();
+  }, [course.videoList]);
 
   const renderStars = (rating) => {
     const stars = [];
@@ -311,20 +295,31 @@ useEffect(() => {
     return stars;
   };
 
+  const [showPaymentCard, setShowPaymentCard] = useState(false);
+
   return (
     <>
       {" "}
       <Header />
+      <div>
+        {showPaymentCard && (
+          <PaymentCard
+            course={course}
+            isOpen={isOpen}
+            onClose={() => setShowPaymentCard(false)}
+          />
+        )}
+      </div>
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="container mx-auto px-4">
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
             <div className="h-32 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-t-2xl flex items-center justify-center">
-              <h1 className="text-4xl font-bold text-white tracking-wide">
+              <h1 className="p-6 text-4xl font-bold text-white tracking-wide">
                 About the Course
               </h1>
             </div>
             <div className="p-8">
-              <div className="flex justify-between items-center mb-4">
+              <div className="flex justify-between items-center mb-4 flex-col sm:flex-row gap-6">
                 <h1 className="text-4xl font-bold text-gray-900">
                   {course.title}
                 </h1>
@@ -333,7 +328,7 @@ useEffect(() => {
                   onClick={handleEnroll}
                   disabled={isEnrolled || isEnrolling}
                   className={`w-32 h-12 flex items-center justify-center rounded-lg text-white font-semibold text-lg
-            shadow-lg transform transition-all duration-300 ease-in-out
+            shadow-lg transform transition-all duration-300 ease-in-out p-2
             ${
               isEnrolled
                 ? "bg-gradient-to-r from-green-400 to-green-600 cursor-default hover:shadow-green-200"
@@ -387,7 +382,7 @@ useEffect(() => {
                 <div className="flex">{renderStars(course.rating)}</div>
                 <span className="text-lg font-semibold text-gray-700 flex items-center">
                   <span className="text-2xl text-accentColor">
-                    {course.rating}
+                    {parseFloat(course.rating).toFixed(2)}
                   </span>
                   <span className="text-gray-400 ml-1">/5.0</span>
                 </span>
@@ -440,6 +435,15 @@ useEffect(() => {
                   isEnrolled={isEnrolled}
                 />
               )}
+            </div>
+            <div className="bg-slate-50 pt-4 px-4">
+              <h1 className="text-3xl font-medium w-full p-4 text-gray-900 rounded-md">
+                User Rating and Reviews
+              </h1>
+              <CourseReview
+                courseId={course.id}
+                isEnrolled={isEnrolled}
+              ></CourseReview>
             </div>
           </div>
         </div>

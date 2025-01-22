@@ -1,0 +1,220 @@
+import React, { useState, useEffect } from "react";
+import Button from "../../../components/Button"; // Assuming you have a Button component
+import logo from "../../../assets/icon_3_blue.png";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { SiRazorpay } from "react-icons/si";
+
+const PaymentCard = ({ course, onClose, isOpen }) => {
+  // Fetch order details from backend
+  const createOrder = async (courseId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/payment/createOrder/${courseId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return res.data;
+    } catch (error) {
+      console.error("Error fetching order details:", error);
+      alert("Failed to fetch order details. Please try again.");
+      return null;
+    }
+  };
+
+  // Handle Razorpay payment initiation
+  const handlePayment = async () => {
+    const orderDetails = await createOrder(course.id); // Get order details from the backend
+    if(orderDetails.free){
+      window.location.reload();
+      toast.success("Succesfully enrolled into the course!");
+      return;
+    }
+
+    if (!orderDetails) return; // If order details are not fetched, exit
+
+    const options = {
+      key: `${import.meta.env.VITE_RZP_KEY_ID}`, // Razorpay API Key
+      amount: orderDetails.amount, // Amount in paise
+      currency: "INR",
+      order_id: orderDetails.order_id, // Only send the order_id
+      handler: async function (response) {
+        // Successful payment callback
+        try {
+          const paymentData = {
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_signature: response.razorpay_signature,
+            courseId: course.id,
+          };
+
+          const paymentVerificationResponse = await axios.post(
+            `${import.meta.env.VITE_API_URL}/payment/verify`,
+            paymentData
+          );
+
+          if (paymentVerificationResponse.status === 200) {
+            console.log("Payment Successful and User Enrolled!");
+            toast.success("Succesfully enrolled into the course!");
+            window.location.reload();
+            onClose();
+          } else {
+            toast.error("Payment verification failed!");
+          }
+        } catch (error) {
+          console.error("Payment verification failed:", error);
+          toast.error("Payment verification failed!");
+        }
+      },
+      theme: {
+        color: "#1E88E5",
+      },
+    };
+
+    if (window.Razorpay) {
+      const rzp1 = new window.Razorpay(options); // Use Razorpay from window object
+
+      rzp1.on("payment.failed", function (response) {
+        // Failed payment callback
+        console.log("Payment Failed!");
+        toast.error("Payment Failed! Please try again.");
+        console.error(response.error); // Handle failure details
+      });
+
+      rzp1.open(); // Open the Razorpay checkout window
+    } else {
+      console.log("Razorpay SDK failed to load!");
+    }
+  };
+
+  const [thumbnail, setThumbnail] = useState(null);
+
+  useEffect(() => {
+    if (!course.thumbnail) {
+      return;
+    }
+    const fetchThumbnail = async () => {
+      try {
+        const response = await axios.get(
+          `${
+            import.meta.env.VITE_API_URL
+          }/get/image/${course.thumbnail.toString()}`
+        );
+        setThumbnail(`data:${response.data.type};base64,${response.data.data}`);
+      } catch (error) {
+        console.error("Error fetching thumbnail:", error);
+      }
+    };
+
+    fetchThumbnail();
+  }, [course.thumbnail]);
+
+  useEffect(() => {
+    if (isOpen) {
+      // Add the no-scroll class to the body
+      document.body.classList.add("no-scroll");
+    } else {
+      // Remove the no-scroll class
+      document.body.classList.remove("no-scroll");
+    }
+
+    // Cleanup on component unmount
+    return () => {
+      document.body.classList.remove("no-scroll");
+    };
+  }, [isOpen]);
+
+  return (
+    <div
+      className="fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-center"
+      onClick={onClose} // Close on outside click
+    >
+      <div
+        className="w-[90%] max-w-md bg-white rounded-xl shadow-lg overflow-hidden relative"
+        onClick={(e) => e.stopPropagation()} // Prevent close on inside click
+      >
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-1 right-3 text-gray-400 hover:text-gray-700 text-4xl"
+        >
+          &times;
+        </button>
+
+        {/* Content */}
+        <div className="">
+          {/* Thumbnail */}
+          <div className="w-full bg-slate-50 border border-b-2 p-3">
+            <div className="ml-auto mr-auto sm:aspect-video h-40 rounded-lg overflow-hidden">
+              {thumbnail ? (
+                <img
+                  src={thumbnail}
+                  alt={course.title}
+                  className="w-full rounded-lg h-full object-contain"
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full">
+                  <img
+                    src={logo}
+                    alt={course.title}
+                    className="w-full h-full object-contain "
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Title and Price */}
+
+          <div className="p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-bold text-gray-800 truncate">
+                {course.title}
+              </h2>
+              <p className="text-xl font-bold text-green-500">
+                {course.price === 0 ? "Free" : `₹${course.price}`}
+                {/* ₹{course.price} */}
+              </p>
+            </div>
+
+            {/* Description */}
+            <p className="text-sm text-gray-600 line-clamp-2">
+              {course.description}
+            </p>
+
+            {/* Tags */}
+            <div className="flex flex-wrap gap-2 mt-4">
+              {course.tags.map((tag, index) => (
+                <span
+                  key={index}
+                  className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-sm"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+
+            {/* Payment Button */}
+            <div className="mt-6">
+              <Button onClick={handlePayment}>
+                {course.price === 0 ? (
+                  "Enroll for Free"
+                ) : (
+                  <>
+                    Proceed to Payment
+                    <SiRazorpay className="ml-1"></SiRazorpay>
+                  </>
+                )}
+              </Button>
+
+              {/* {SiRazorpay} */}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+export default PaymentCard;

@@ -1,8 +1,10 @@
 import React, { useEffect,useRef, useState } from 'react';
 import { FaPlay, FaPause, FaVolumeUp, FaVolumeMute, FaExpand } from 'react-icons/fa';
 import { ImSpinner2 } from 'react-icons/im'; // Import spinner icon
+import axios from 'axios';
+import logo from '../../../assets/icon_3_white.png';
 
-const VideoPlayer = ({ courseId, video ,thumbnailSource}) => {
+const VideoPlayer = ({ courseId, video }) => {
   const videoRef = useRef(null);
   const progressBarRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -13,6 +15,27 @@ const VideoPlayer = ({ courseId, video ,thumbnailSource}) => {
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const [isBuffering, setIsBuffering] = useState(true);
   const token = localStorage.getItem("token");
+  const [thumbnailSource, setThumbnailSource] = useState('');
+
+  useEffect(() => {
+    const fetchThumbnail = async () => {
+      if (!video?.thumbnail) return; // Check if thumbnail exists before proceeding
+  
+      try {
+        console.log(video.thumbnail);
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/get/image/${video.thumbnail}`
+        );
+        setThumbnailSource(`data:${response.data.type};base64,${response.data.data}`);
+      } catch (error) {
+        console.error("Error fetching video:", error);
+      }
+    };
+  
+    fetchThumbnail();
+  }, [video?.thumbnail]);
+  
+
 
   const formatTime = (timeInSeconds) => {
     if (isNaN(timeInSeconds)) return '0:00';
@@ -68,7 +91,6 @@ const VideoPlayer = ({ courseId, video ,thumbnailSource}) => {
 
   const handleContextMenu = (e) => {
     e.preventDefault();
-    setIsBuffering(false);
   };
 
   const handleWaiting = () => {
@@ -84,7 +106,7 @@ const VideoPlayer = ({ courseId, video ,thumbnailSource}) => {
       {/* Thumbnail while video loads initially */}
       {!isVideoLoaded && video.thumbnail && (
         <img
-          src={thumbnailSource}
+          src={thumbnailSource || logo}
           alt="Video thumbnail"
           className="w-full h-full object-cover absolute top-0 left-0"
         />

@@ -53,6 +53,7 @@ const Login = () => {
           success: (response) => {
             if (admin) {
               localStorage.setItem("adminToken", response.data.token);
+              localStorage.setItem("isLogged", true);
               navigate("/admin/dashboard");
               return <b>Login successful!</b>;
             }
@@ -79,7 +80,7 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="flex gap-8">
-        <div className=" relative w-[500px] h-[600px]">
+        <div className="sm:w-[500px] sm:h-[600px]">
           <div
             className={`absolute top-0 left-0 w-full ${
               admin

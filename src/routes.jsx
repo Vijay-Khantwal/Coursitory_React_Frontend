@@ -26,11 +26,11 @@ const routes = createBrowserRouter([
         element: <CoursePage />
     },
     {
-        path:'/courseDetails',
+        path:'/courseDetails/:id',
         element : <CourseDetails/>
     },
     {
-        path:'/videoPage',
+        path:'/videoPage/:courseId/:vidId',
         element : <VideoPage/>
     },
     {

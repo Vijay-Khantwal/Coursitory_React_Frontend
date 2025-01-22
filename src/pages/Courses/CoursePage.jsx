@@ -14,78 +14,78 @@ const CoursePage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const name = "Vijay's";
+
   useEffect(() => {
     if (location.state?.activeSection) {
       setActiveSection(location.state.activeSection);
     }
-  }, [location]);
+  }, [location.state]);
 
+  useEffect(() => {
+    const fetchCourses = async () => {
+      const token = localStorage.getItem("token");
+      setLoading(true);
 
-useEffect(() => {
-  const fetchCourses = async () => {
-    const token = localStorage.getItem("token");
-    setLoading(true);
+      try {
+        // First fetch all courses
+        const allCoursesResponse = await axios.get(
+          `${import.meta.env.VITE_API_URL}/get/courses`
+        );
+        setAllCourses(allCoursesResponse.data);
 
-    try {
-      // First fetch all courses
-      const allCoursesResponse = await axios.get(`${import.meta.env.VITE_API_URL}/get/courses`);
-      setAllCourses(allCoursesResponse.data);
+        // Then fetch enrolled courses if token exists
+        if (token) {
+          try {
+            const enrolledResponse = await axios.get(
+              `${import.meta.env.VITE_API_URL}/user/get/courses`,
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
 
-      // Then fetch enrolled courses if token exists
-      if (token) {
-        try {
-          const enrolledResponse = await axios.get(
-            `${import.meta.env.VITE_API_URL}/user/get/courses`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
+            if (enrolledResponse.status === 401) {
+              setIsLogged(false);
+              localStorage.removeItem("isLogged");
+              setActiveSection("allCourses");
+              setEnrolledCourses([]);
+              return;
             }
-          );
 
-          if (enrolledResponse.status === 401) {
+            if (enrolledResponse.status === 204) {
+              setEnrolledCourses([]);
+              setIsLogged(true);
+              return;
+            }
+
+            setEnrolledCourses(enrolledResponse.data);
+          } catch (enrolledError) {
+            console.error("Error fetching enrolled courses:", enrolledError);
             setIsLogged(false);
-            localStorage.removeItem("isLogged");
             setActiveSection("allCourses");
-            setEnrolledCourses([]);
-            return;
           }
-
-          if (enrolledResponse.status === 204) {
-            setEnrolledCourses([]);
-            setIsLogged(true);
-            return;
-          }
-
-          setEnrolledCourses(enrolledResponse.data);
-        } catch (enrolledError) {
-          // Handle any error in enrolled courses fetch
-          console.error("Error fetching enrolled courses:", enrolledError);
+        } else {
           setIsLogged(false);
+          localStorage.removeItem("isLogged");
           setActiveSection("allCourses");
         }
-      } else {
+      } catch (error) {
         setIsLogged(false);
-        localStorage.removeItem("isLogged");
         setActiveSection("allCourses");
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      setIsLogged(false);
-      setActiveSection("allCourses");
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
-  fetchCourses();
-}, [navigate]);
-
+    fetchCourses();
+  }, [navigate]);
 
   return (
     <>
       <Header />
       <div className="w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 py-8">
-        <h1 className="text-4xl font-bold text-center text-white">
+        <h1 className="text-2xl md:text-4xl font-bold text-center text-white">
           Welcome to{" "}
           <a
             href="https://www.linkedin.com/in/vijay-khantwal/"
@@ -100,13 +100,15 @@ useEffect(() => {
       </div>
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="container mx-auto px-4">
-          <div className="flex justify-center space-x-8 mb-8">
+          <div className="flex flex-wrap justify-center gap-4 mb-8">
             {["allCourses", "enrolledCourses"].map((section) => (
               <button
                 key={section}
-                onClick={() => setActiveSection(section)}
-                // () =>  navigate('/landing', { state: { activeSection: section } })
-                className={`px-6 py-2 min-w-48 text-lg font-medium rounded-lg transition-all duration-200 ${
+                onClick={() => {
+                  setActiveSection(section);
+                  navigate("/courses", { state: { activeSection: section } });
+                }}
+                className={`px-4 py-2 text-sm md:text-lg font-medium rounded-lg transition-all duration-200 ${
                   activeSection === section
                     ? "text-blue-600 bg-blue-50"
                     : "text-gray-500 hover:text-gray-700"
@@ -118,13 +120,13 @@ useEffect(() => {
           </div>
 
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 justify-items-center">
               {[...Array(6)].map((_, index) => (
                 <div
                   key={index}
                   className="bg-white rounded-xl shadow-lg overflow-hidden animate-pulse w-full max-w-sm"
                 >
-                  <div className="h-48 bg-gray-200"></div>
+                  <div className="h-36 md:h-48 bg-gray-200"></div>
                   <div className="p-6 space-y-3">
                     <div className="h-4 bg-gray-200 rounded w-3/4"></div>
                     <div className="h-4 bg-gray-200 rounded"></div>
@@ -138,12 +140,12 @@ useEffect(() => {
               {activeSection === "enrolledCourses" &&
               enrolledCourses.length === 0 ? (
                 <div className="text-center py-10">
-                  <p className="text-xl text-gray-600">
+                  <p className="text-lg md:text-xl text-gray-600">
                     Enroll into courses to start learning
                   </p>
                   <div className="mt-4">
                     <svg
-                      className="mx-auto h-80 w-80 text-gray-400"
+                      className="mx-auto h-40 w-40 sm:h-60 sm:w-60 md:h-80 md:w-80 text-gray-400"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
                       fill="none"
@@ -167,7 +169,7 @@ useEffect(() => {
                 </div>
               ) : (
                 <div className="container mx-auto px-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 xl:grid-cols-3 justify-items-center">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 xl:grid-cols-3 justify-items-center">
                     {activeSection === "allCourses"
                       ? allCourses.map((course, index) => (
                           <CourseCard key={index} course={course} />
