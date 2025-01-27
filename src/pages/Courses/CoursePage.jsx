@@ -27,13 +27,12 @@ const CoursePage = () => {
       setLoading(true);
 
       try {
-        // First fetch all courses
         const allCoursesResponse = await axios.get(
           `${import.meta.env.VITE_API_URL}/get/courses`
         );
         setAllCourses(allCoursesResponse.data);
 
-        // Then fetch enrolled courses if token exists
+        
         if (token) {
           try {
             const enrolledResponse = await axios.get(

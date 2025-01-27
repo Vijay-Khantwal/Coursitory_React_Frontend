@@ -1,6 +1,6 @@
 import React, { useEffect,useRef, useState } from 'react';
 import { FaPlay, FaPause, FaVolumeUp, FaVolumeMute, FaExpand } from 'react-icons/fa';
-import { ImSpinner2 } from 'react-icons/im'; // Import spinner icon
+import { ImSpinner2 } from 'react-icons/im'; 
 import axios from 'axios';
 import logo from '../../../assets/icon_3_white.png';
 
@@ -19,7 +19,7 @@ const VideoPlayer = ({ courseId, video }) => {
 
   useEffect(() => {
     const fetchThumbnail = async () => {
-      if (!video?.thumbnail) return; // Check if thumbnail exists before proceeding
+      if (!video?.thumbnail) return;
   
       try {
         console.log(video.thumbnail);
@@ -103,7 +103,7 @@ const VideoPlayer = ({ courseId, video }) => {
 
   return (
     <div className="relative w-full h-full rounded-sm overflow-hidden">
-      {/* Thumbnail while video loads initially */}
+
       {!isVideoLoaded && video.thumbnail && (
         <img
           src={thumbnailSource || logo}
@@ -112,7 +112,6 @@ const VideoPlayer = ({ courseId, video }) => {
         />
       )}
 
-      {/* Loading Spinner */}
       {isBuffering && (
         <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <ImSpinner2 className="animate-spin text-4xl text-white" />

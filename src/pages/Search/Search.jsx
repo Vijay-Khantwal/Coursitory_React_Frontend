@@ -7,22 +7,21 @@ import ScrollIndicator from "./ScrollIndicator.jsx";
 const Search = ({ searchPattern, setIsSearchOpen }) => {
   const [courseResults, setCourseResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [debouncedSearchPattern, setDebouncedSearchPattern] = useState(""); // Debounced search pattern
-  const blurRegionRef = useRef(null); // Ref for detecting outside clicks
+  const [debouncedSearchPattern, setDebouncedSearchPattern] = useState(""); 
+  const blurRegionRef = useRef(null); 
   const isLogged = localStorage.getItem("isLogged");
 
-  // Debounce the search input
+  
   useEffect(() => {
     const handler = setTimeout(() => {
-      setDebouncedSearchPattern(searchPattern); // Update debounced value after delay
-    }, 700); // 500ms delay
+      setDebouncedSearchPattern(searchPattern);
+    }, 700); 
 
     return () => {
-      clearTimeout(handler); // Clear timeout if the user keeps typing
+      clearTimeout(handler);
     };
   }, [searchPattern]);
 
-  // Fetch search results based on the debounced value
   useEffect(() => {
     if (!debouncedSearchPattern) {
       setCourseResults([]);
@@ -56,7 +55,6 @@ const Search = ({ searchPattern, setIsSearchOpen }) => {
     fetchResults();
   }, [debouncedSearchPattern]);
 
-  // Close the search bar when clicking outside the search area
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (

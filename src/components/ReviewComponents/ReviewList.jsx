@@ -14,7 +14,7 @@ const ReviewList = ({ courseId }) => {
     const fetchReviews = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/reviews/get/${courseId}?page=${page}&size=3` // Page size set to 2
+          `${import.meta.env.VITE_API_URL}/reviews/get/${courseId}?page=${page}&size=3`  
         );
         setHasMore(response.data.page.number + 1 < response.data.page.totalPages);
         setReviews(response.data._embedded.reviewList);
@@ -50,7 +50,7 @@ const ReviewList = ({ courseId }) => {
         </div>
       ))}
 
-      {/* Pagination Navigation */}
+
       <div className="max-w-sm ml-auto flex gap-6 mt-4">
 
         <Button disabled={page===0} onClick={()=>setPage((prev) => Math.max(prev-1,0))}>{"< "}Previous</Button>
@@ -81,9 +81,9 @@ const ReviewComment = ({ comment }) => {
 };
 
 const StarRating = ({ rating }) => {
-  const fullStars = Math.floor(rating); // Number of full stars
-  const hasHalfStar = rating % 1 !== 0; // Check if there's a half star
-  const emptyStars = 5 - Math.ceil(rating); // Remaining empty stars
+  const fullStars = Math.floor(rating);  
+  const hasHalfStar = rating % 1 !== 0;  
+  const emptyStars = 5 - Math.ceil(rating);  
 
   return (
     <div className="flex items-center space-x-1 text-yellow-600">

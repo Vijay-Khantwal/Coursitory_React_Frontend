@@ -5,13 +5,13 @@ const ScrollIndicator = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setVisible(false); // Hide the indicator after 3 seconds
+      setVisible(false); 
     }, 3000);
 
-    return () => clearTimeout(timer); // Clear timer on component unmount
+    return () => clearTimeout(timer); 
   }, []);
 
-  if (!visible) return null; // Do not render if not visible
+  if (!visible) return null; 
 
   return (
     <div className="absolute top-[45vh] right-0 transform -translate-x-1/2 flex items-center justify-center animate-bounce">

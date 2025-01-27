@@ -9,7 +9,7 @@ const ReviewForm = ({ courseId, onReviewSubmitted, existingReview }) => {
   const [comment, setComment] = useState(existingReview?.comment || "");
 
   const handleClick = (value) => {
-    setNewRating(value); // Set the rating based on the clicked star
+    setNewRating(value);
   };
 
   useEffect(() => {
@@ -38,7 +38,7 @@ const ReviewForm = ({ courseId, onReviewSubmitted, existingReview }) => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      onReviewSubmitted(response.data); // Refresh reviews
+      onReviewSubmitted(response.data);
     } catch (error) {
       console.error("Error submitting review:", error);
     }

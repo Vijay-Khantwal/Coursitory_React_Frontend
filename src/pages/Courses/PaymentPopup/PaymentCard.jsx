@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
-import Button from "../../../components/Button"; // Assuming you have a Button component
+import Button from "../../../components/Button";
 import logo from "../../../assets/icon_3_blue.png";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { SiRazorpay } from "react-icons/si";
 
 const PaymentCard = ({ course, onClose, isOpen }) => {
-  // Fetch order details from backend
   const createOrder = async (courseId) => {
     try {
       const token = localStorage.getItem("token");
@@ -24,24 +23,22 @@ const PaymentCard = ({ course, onClose, isOpen }) => {
     }
   };
 
-  // Handle Razorpay payment initiation
   const handlePayment = async () => {
-    const orderDetails = await createOrder(course.id); // Get order details from the backend
+    const orderDetails = await createOrder(course.id);
     if(orderDetails.free){
       window.location.reload();
       toast.success("Succesfully enrolled into the course!");
       return;
     }
 
-    if (!orderDetails) return; // If order details are not fetched, exit
+    if (!orderDetails) return;
 
     const options = {
-      key: `${import.meta.env.VITE_RZP_KEY_ID}`, // Razorpay API Key
-      amount: orderDetails.amount, // Amount in paise
+      key: `${import.meta.env.VITE_RZP_KEY_ID}`,
+      amount: orderDetails.amount,
       currency: "INR",
-      order_id: orderDetails.order_id, // Only send the order_id
+      order_id: orderDetails.order_id,
       handler: async function (response) {
-        // Successful payment callback
         try {
           const paymentData = {
             razorpay_payment_id: response.razorpay_payment_id,
@@ -74,16 +71,15 @@ const PaymentCard = ({ course, onClose, isOpen }) => {
     };
 
     if (window.Razorpay) {
-      const rzp1 = new window.Razorpay(options); // Use Razorpay from window object
+      const rzp1 = new window.Razorpay(options); 
 
       rzp1.on("payment.failed", function (response) {
-        // Failed payment callback
         console.log("Payment Failed!");
         toast.error("Payment Failed! Please try again.");
-        console.error(response.error); // Handle failure details
+        console.error(response.error);
       });
 
-      rzp1.open(); // Open the Razorpay checkout window
+      rzp1.open(); 
     } else {
       console.log("Razorpay SDK failed to load!");
     }
