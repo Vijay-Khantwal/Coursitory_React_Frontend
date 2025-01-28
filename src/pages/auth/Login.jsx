@@ -6,6 +6,8 @@ import logo from "../../assets/icon_3_white.png";
 import logoBLack from "../../assets/icon_3_black.png";
 import { ImSpinner2 } from "react-icons/im";
 import axios from "axios";
+import GLoginButton from "./components/GLoginButton";
+import Button from "../../components/Button";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -80,7 +82,7 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="flex gap-8">
-        <div className="sm:w-[500px] sm:h-[600px]">
+        <div className="sm:min-w-[500px] sm:h-[600px]">
           <div
             className={`absolute top-0 left-0 w-full ${
               admin
@@ -164,25 +166,17 @@ const Login = () => {
                 </div>
               </div>
             </div>
-            <button
-              type="submit"
-              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white transition-all duration-300 ${
-                loading
-                  ? "bg-gray-600"
-                  : admin
-                  ? "bg-purple-600 hover:bg-purple-700"
-                  : "bg-blue-600 hover:bg-blue-700"
-              } focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-                admin ? "focus:ring-purple-500" : "focus:ring-blue-500"
-              }`}
-              disabled={loading}
-            >
+            <Button type="submit" loading={loading} disabled={loading}>
               {loading ? (
                 <ImSpinner2 className="animate-spin h-5 w-5 text-white" />
               ) : (
                 "LOGIN"
               )}
-            </button>
+            </Button>
+            <div className="flex items-center justify-center">
+              {!admin && <GLoginButton />}
+            </div>
+
             {!admin && (
               <div className="text-center mt-4">
                 <p className="text-sm text-gray-600">

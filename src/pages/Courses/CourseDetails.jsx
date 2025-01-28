@@ -233,7 +233,6 @@ const CourseDetails = () => {
     const fetchVideoMetadata = async () => {
       setLoading(true);
       try {
-        // Fetch metadata for all videos concurrently
         const metadataPromises = course.videoList.map((videoId) =>
           axios
             .get(`${import.meta.env.VITE_API_URL}/get/metadata/${videoId}`)
@@ -242,7 +241,6 @@ const CourseDetails = () => {
         const metadata = await Promise.all(metadataPromises);
         setVideoMetadata(metadata);
 
-        // Fetch thumbnails only once
         metadata.forEach(async (video) => {
           if (!video.thumbnail) {
             setThumbnails((prev) => ({
@@ -262,7 +260,6 @@ const CourseDetails = () => {
               }));
             } catch (error) {
               console.error("Error fetching thumbnail:", error);
-              // Set logo as fallback if thumbnail fetch fails
               setThumbnails((prev) => ({
                 ...prev,
                 [video.thumbnail]: logo,

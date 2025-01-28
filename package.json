@@ -10,8 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-oauth/google": "^0.12.1",
     "axios": "^1.7.9",
     "framer-motion": "^11.15.0",
+    "jwt-decode": "^4.0.0",
     "razorpay": "^2.9.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
