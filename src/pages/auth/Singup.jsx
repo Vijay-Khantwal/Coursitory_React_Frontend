@@ -1,13 +1,12 @@
 import React, { useState } from "react";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import logo from "../../assets/icon_3_white.png";
 import logoBLack from "../../assets/icon_3_black.png";
-import { ImSpinner2 } from "react-icons/im";
 import axios from "axios";
 import GLoginButton from "./components/GLoginButton";
 import Button from "../../components/Button";
+import { CloseEye, LoadingCircle, OpenEye } from "../../components/icons";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -140,7 +139,7 @@ const Signup = () => {
                   onClick={() => togglePasswordVisibility("password")}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
                 >
-                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  {showPassword ? <CloseEye /> : <OpenEye />}
                 </button>
               </div>
             </div>
@@ -172,7 +171,7 @@ const Signup = () => {
                   onClick={() => togglePasswordVisibility("confirm")}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
                 >
-                  {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                  {showConfirmPassword ? <CloseEye /> : <OpenEye />}
                 </button>
               </div>
             </div>
@@ -181,7 +180,9 @@ const Signup = () => {
             <div className="flex items-center justify-center sm:w-1/2">
               <Button type="submit" loading={loading} disabled={loading}>
                 {loading ? (
-                  <ImSpinner2 className="animate-spin h-5 w-5 text-white" />
+                  <div className="animate-spin w-5 text-white ">
+                    <LoadingCircle />
+                  </div>
                 ) : (
                   "SIGN UP"
                 )}

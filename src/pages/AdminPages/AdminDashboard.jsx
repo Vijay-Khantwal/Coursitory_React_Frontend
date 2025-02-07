@@ -3,25 +3,11 @@ import Header from "../../components/Header.jsx";
 import Footer from "../../components/Footer.jsx";
 import toast from "react-hot-toast";
 import axios from "axios";
-import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
+import StarRating from "../../components/StarRating.jsx";
 import NotFound from "../404ErrorPage/NotFound.jsx";
 import Button from "../../components/Button.jsx";
 
 const CourseCardAdmin = ({ course, onClick, isSelected }) => {
-  const renderStars = (rating) => {
-    const stars = [];
-    const roundedRating = Math.round(rating * 2) / 2;
-    for (let i = 1; i <= 5; i++) {
-      if (i <= roundedRating) {
-        stars.push(<FaStar key={i} className="text-accentColor" />);
-      } else if (i - roundedRating === 0.5) {
-        stars.push(<FaStarHalfAlt key={i} className="text-accentColor" />);
-      } else {
-        stars.push(<FaRegStar key={i} className="text-accentColor" />);
-      }
-    }
-    return stars;
-  };
 
   return (
     <div
@@ -39,7 +25,8 @@ const CourseCardAdmin = ({ course, onClick, isSelected }) => {
             {course.title}
           </h3>
           <div className="flex items-center gap-1 ml-2 flex-shrink-0">
-            {renderStars(course.rating)}
+            <StarRating rating={course.rating} colour="#FFA500" />
+            
           </div>
         </div>
         <p className="text-gray-600 text-sm mb-4 line-clamp-2">

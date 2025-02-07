@@ -1,8 +1,14 @@
-import React, { useEffect,useRef, useState } from 'react';
-import { FaPlay, FaPause, FaVolumeUp, FaVolumeMute, FaExpand } from 'react-icons/fa';
-import { ImSpinner2 } from 'react-icons/im'; 
-import axios from 'axios';
-import logo from '../../../assets/icon_3_white.png';
+import React, { useEffect, useRef, useState } from "react";
+import {
+  PlayIcon,
+  PauseIcon,
+  VolumeMute,
+  VolumeUp,
+  Expand,
+  LoadingCircle,
+} from "../../../components/icons";
+import axios from "axios";
+import logo from "../../../assets/icon_3_white.png";
 
 const VideoPlayer = ({ courseId, video }) => {
   const videoRef = useRef(null);
@@ -15,35 +21,35 @@ const VideoPlayer = ({ courseId, video }) => {
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const [isBuffering, setIsBuffering] = useState(true);
   const token = localStorage.getItem("token");
-  const [thumbnailSource, setThumbnailSource] = useState('');
+  const [thumbnailSource, setThumbnailSource] = useState("");
 
   useEffect(() => {
     const fetchThumbnail = async () => {
       if (!video?.thumbnail) return;
-  
+
       try {
         console.log(video.thumbnail);
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL}/get/image/${video.thumbnail}`
         );
-        setThumbnailSource(`data:${response.data.type};base64,${response.data.data}`);
+        setThumbnailSource(
+          `data:${response.data.type};base64,${response.data.data}`
+        );
       } catch (error) {
         console.error("Error fetching video:", error);
       }
     };
-  
+
     fetchThumbnail();
   }, [video?.thumbnail]);
-  
-
 
   const formatTime = (timeInSeconds) => {
-    if (isNaN(timeInSeconds)) return '0:00';
-    
+    if (isNaN(timeInSeconds)) return "0:00";
+
     const minutes = Math.floor(timeInSeconds / 60);
     const seconds = Math.floor(timeInSeconds % 60);
-    
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   };
 
   const togglePlay = () => {
@@ -62,7 +68,8 @@ const VideoPlayer = ({ courseId, video }) => {
   };
 
   const handleTimeUpdate = () => {
-    const progress = (videoRef.current.currentTime / videoRef.current.duration) * 100;
+    const progress =
+      (videoRef.current.currentTime / videoRef.current.duration) * 100;
     setProgress(progress);
     setCurrentTime(videoRef.current.currentTime);
   };
@@ -70,7 +77,10 @@ const VideoPlayer = ({ courseId, video }) => {
   const handleProgressClick = (e) => {
     if (videoRef.current && videoRef.current.duration) {
       const rect = progressBarRef.current.getBoundingClientRect();
-      const clickPosition = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      const clickPosition = Math.max(
+        0,
+        Math.min(1, (e.clientX - rect.left) / rect.width)
+      );
       const newTime = clickPosition * videoRef.current.duration;
       if (isFinite(newTime)) {
         videoRef.current.currentTime = newTime;
@@ -103,7 +113,6 @@ const VideoPlayer = ({ courseId, video }) => {
 
   return (
     <div className="relative w-full h-full rounded-sm overflow-hidden">
-
       {!isVideoLoaded && video.thumbnail && (
         <img
           src={thumbnailSource || logo}
@@ -114,63 +123,70 @@ const VideoPlayer = ({ courseId, video }) => {
 
       {isBuffering && (
         <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <ImSpinner2 className="animate-spin text-4xl text-white" />
+          <div className="animate-spin w-10 text-white ">
+            <LoadingCircle />
+          </div>
         </div>
       )}
 
       <video
         ref={videoRef}
-        src={`${import.meta.env.VITE_API_URL}/stream/video/${courseId}/${video.id}/${token}`}
+        src={`${import.meta.env.VITE_API_URL}/stream/video/${courseId}/${
+          video.id
+        }/${token}`}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
         onContextMenu={handleContextMenu}
         controlsList="nodownload"
         onLoadStart={() => setIsVideoLoaded(false)}
-        onCanPlay={() =>{ setIsVideoLoaded(true);setIsBuffering(false);}}
+        onCanPlay={() => {
+          setIsVideoLoaded(true);
+          setIsBuffering(false);
+        }}
         onWaiting={handleWaiting}
         onPlaying={handlePlaying}
         className="w-full h-full cursor-pointer"
         onClick={togglePlay}
       />
-      
+
       <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-4">
-        <div 
+        <div
           ref={progressBarRef}
-          className="w-full h-2 bg-gray-600 cursor-pointer mb-4 relative" 
+          className="w-full h-2 bg-gray-600 cursor-pointer mb-4 relative"
           onClick={handleProgressClick}
         >
-          <div 
-            className="h-full bg-yellow-300 absolute top-0 left-0" 
-            style={{ width: `${progress}%` }} 
+          <div
+            className="h-full bg-yellow-300 absolute top-0 left-0"
+            style={{ width: `${progress}%` }}
           />
         </div>
-        
+
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <button 
+            <button
               onClick={togglePlay}
               className="text-white hover:text-gray-300 transition-colors"
             >
-              {isPlaying ? <FaPause /> : <FaPlay />}
+              {isPlaying ? <PauseIcon /> : <PlayIcon />}
             </button>
-            
-            <button 
+
+            <button
               onClick={toggleMute}
               className="text-white hover:text-gray-300 transition-colors"
             >
-              {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
+              {isMuted ? <VolumeMute /> : <VolumeUp />}
             </button>
-            
+
             <span className="text-white text-sm">
               {formatTime(currentTime)} / {formatTime(duration)}
             </span>
           </div>
 
-          <button 
+          <button
             onClick={toggleFullScreen}
             className="text-white hover:text-gray-300 transition-colors"
           >
-            <FaExpand />
+            <Expand />
           </button>
         </div>
       </div>

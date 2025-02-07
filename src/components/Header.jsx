@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/icon_3_blue.png";
 import Search from "../pages/Search/Search.jsx";
-import toast from "react-hot-toast";
 
 const Header = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);

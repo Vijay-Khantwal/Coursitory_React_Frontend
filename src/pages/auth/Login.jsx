@@ -1,13 +1,12 @@
 import React, { useState } from "react";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import logo from "../../assets/icon_3_white.png";
 import logoBLack from "../../assets/icon_3_black.png";
-import { ImSpinner2 } from "react-icons/im";
 import axios from "axios";
 import GLoginButton from "./components/GLoginButton";
 import Button from "../../components/Button";
+import { CloseEye, LoadingCircle, OpenEye } from "../../components/icons";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -161,14 +160,16 @@ const Login = () => {
                     onClick={togglePasswordVisibility}
                     className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
                   >
-                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                    {showPassword ? <FaEyeSlash /> : <OpenEye />}
                   </button>
                 </div>
               </div>
             </div>
             <Button type="submit" loading={loading} disabled={loading}>
               {loading ? (
-                <ImSpinner2 className="animate-spin h-5 w-5 text-white" />
+                <div className="animate-spin w-5 text-white ">
+                  <LoadingCircle />
+                </div>
               ) : (
                 "LOGIN"
               )}
@@ -194,7 +195,7 @@ const Login = () => {
           </form>
         </div>
 
-        <div className="max-w-xl w-full h-[600px] bg-gradient-to-b from-blue-600 via-purple-600 to-pink-600 rounded-lg shadow-md flex flex-col items-center justify-center p-8 text-white hidden lg:flex">
+        <div className="max-w-xl w-full h-[600px] bg-gradient-to-b from-blue-600 via-purple-600 to-pink-600 rounded-lg shadow-md flex-col items-center justify-center p-8 text-white hidden lg:flex">
           <img src={logo} alt="Coursitory Logo" className="w-36 h-36 mb-6" />
           <h1 className="text-4xl font-bold mb-4">Coursitory</h1>
           <p className="text-center text-lg">

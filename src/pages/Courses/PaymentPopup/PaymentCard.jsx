@@ -3,7 +3,7 @@ import Button from "../../../components/Button";
 import logo from "../../../assets/icon_3_blue.png";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { SiRazorpay } from "react-icons/si";
+import { RazorPayIcon } from "../../../components/icons";
 
 const PaymentCard = ({ course, onClose, isOpen }) => {
   const createOrder = async (courseId) => {
@@ -109,14 +109,11 @@ const PaymentCard = ({ course, onClose, isOpen }) => {
 
   useEffect(() => {
     if (isOpen) {
-      // Add the no-scroll class to the body
       document.body.classList.add("no-scroll");
     } else {
-      // Remove the no-scroll class
       document.body.classList.remove("no-scroll");
     }
 
-    // Cleanup on component unmount
     return () => {
       document.body.classList.remove("no-scroll");
     };
@@ -125,23 +122,19 @@ const PaymentCard = ({ course, onClose, isOpen }) => {
   return (
     <div
       className="fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-center"
-      onClick={onClose} // Close on outside click
+      onClick={onClose}
     >
       <div
         className="w-[90%] max-w-md bg-white rounded-xl shadow-lg overflow-hidden relative"
-        onClick={(e) => e.stopPropagation()} // Prevent close on inside click
+        onClick={(e) => e.stopPropagation()} 
       >
-        {/* Close Button */}
         <button
           onClick={onClose}
           className="absolute top-1 right-3 text-gray-400 hover:text-gray-700 text-4xl"
         >
           &times;
         </button>
-
-        {/* Content */}
         <div className="">
-          {/* Thumbnail */}
           <div className="w-full bg-slate-50 border border-b-2 p-3">
             <div className="ml-auto mr-auto sm:aspect-video h-40 rounded-lg overflow-hidden">
               {thumbnail ? (
@@ -161,9 +154,6 @@ const PaymentCard = ({ course, onClose, isOpen }) => {
               )}
             </div>
           </div>
-
-          {/* Title and Price */}
-
           <div className="p-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-bold text-gray-800 truncate">
@@ -171,16 +161,13 @@ const PaymentCard = ({ course, onClose, isOpen }) => {
               </h2>
               <p className="text-xl font-bold text-green-500">
                 {course.price === 0 ? "Free" : `₹${course.price}`}
-                {/* ₹{course.price} */}
               </p>
             </div>
 
-            {/* Description */}
             <p className="text-sm text-gray-600 line-clamp-2">
               {course.description}
             </p>
 
-            {/* Tags */}
             <div className="flex flex-wrap gap-2 mt-4">
               {course.tags.map((tag, index) => (
                 <span
@@ -191,8 +178,6 @@ const PaymentCard = ({ course, onClose, isOpen }) => {
                 </span>
               ))}
             </div>
-
-            {/* Payment Button */}
             <div className="mt-6">
               <Button onClick={handlePayment}>
                 {course.price === 0 ? (
@@ -200,12 +185,11 @@ const PaymentCard = ({ course, onClose, isOpen }) => {
                 ) : (
                   <>
                     Proceed to Payment
-                    <SiRazorpay className="ml-1"></SiRazorpay>
+                    <RazorPayIcon/>
+                    
                   </>
                 )}
               </Button>
-
-              {/* {SiRazorpay} */}
             </div>
           </div>
         </div>
