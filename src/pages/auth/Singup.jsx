@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import logo from "../../assets/icon_3_white.png";
 import logoBLack from "../../assets/icon_3_black.png";
-import { ImSpinner2 } from "react-icons/im";
 import axios from "axios";
+import GLoginButton from "./components/GLoginButton";
+import Button from "../../components/Button";
+import { CloseEye, LoadingCircle, OpenEye } from "../../components/Icons";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -42,27 +43,29 @@ const Signup = () => {
       toast.error("Passwords don't match!");
       return;
     }
-    
+
     setLoading(true);
-    toast.promise(
-      axios.post(`${import.meta.env.VITE_API_URL}/user/register`, {
-        username: formData.username,
-        password: formData.password,
-      }),
-      {
-        loading: 'Creating your account...',
-        success: () => {
-          navigate("/login");
-          return <b>Registration successful!</b>;
-        },
-        error: (error) => {
-          if (error.response?.status === 409) {
-            return <b>Username already taken!</b>;
-          }
-          return <b>Something went wrong!</b>;
-        },
-      }
-    ).finally(() => setLoading(false));
+    toast
+      .promise(
+        axios.post(`${import.meta.env.VITE_API_URL}/user/register`, {
+          username: formData.username,
+          password: formData.password,
+        }),
+        {
+          loading: "Creating your account...",
+          success: () => {
+            navigate("/login");
+            return <b>Registration successful!</b>;
+          },
+          error: (error) => {
+            if (error.response?.status === 409) {
+              return <b>Username already taken!</b>;
+            }
+            return <b>Something went wrong!</b>;
+          },
+        }
+      )
+      .finally(() => setLoading(false));
   };
 
   const togglePasswordVisibility = (field) => {
@@ -80,7 +83,7 @@ const Signup = () => {
       <div className="flex gap-8">
         <form
           onSubmit={handleSubmit}
-          className="  sm:w-[500px] sm:h-[600px]  flex flex-col justify-center space-y-8 bg-white p-8 rounded-lg shadow-md relative"
+          className="  sm:min-w-[500px] sm:h-[600px]  flex flex-col justify-center space-y-8 bg-white p-8 rounded-lg shadow-md relative"
         >
           <div className="flex flex-col items-center gap-2">
             <div className="flex items-center gap-2">
@@ -136,7 +139,7 @@ const Signup = () => {
                   onClick={() => togglePasswordVisibility("password")}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
                 >
-                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  {showPassword ? <CloseEye /> : <OpenEye />}
                 </button>
               </div>
             </div>
@@ -168,24 +171,27 @@ const Signup = () => {
                   onClick={() => togglePasswordVisibility("confirm")}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
                 >
-                  {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                  {showConfirmPassword ? <CloseEye /> : <OpenEye />}
                 </button>
               </div>
             </div>
           </div>
-          <button
-            type="submit"
-            className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white transition-all duration-300 ${
-              loading ? "bg-gray-600" : "bg-blue-600 hover:bg-blue-700"
-            } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
-            disabled={loading}
-          >
-            {loading ? (
-              <ImSpinner2 className="animate-spin h-5 w-5 text-white" />
-            ) : (
-              "SIGN UP"
-            )}
-          </button>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="flex items-center justify-center sm:w-1/2">
+              <Button type="submit" loading={loading} disabled={loading}>
+                {loading ? (
+                  <div className="animate-spin w-5 text-white ">
+                    <LoadingCircle />
+                  </div>
+                ) : (
+                  "SIGN UP"
+                )}
+              </Button>
+            </div>
+            <div className="flex justify-center align-middle sm:w-1/2">
+              <GLoginButton />
+            </div>
+          </div>
           <div className="text-center mt-4">
             <p className="text-sm text-gray-600">
               Already have an account?{" "}
@@ -200,12 +206,11 @@ const Signup = () => {
           </div>
         </form>
 
-        <div className="max-w-xl w-full h-[600px] bg-gradient-to-b from-blue-600 via-purple-600 to-pink-600 rounded-lg shadow-md flex flex-col items-center justify-center p-8 text-white hidden lg:flex">
+        <div className="max-w-xl w-full h-[600px] bg-gradient-to-b from-blue-600 via-purple-600 to-pink-600 rounded-lg shadow-md flex-col items-center justify-center p-8 text-white hidden lg:flex">
           <img src={logo} alt="Coursitory Logo" className="w-36 h-36 mb-6" />
           <h1 className="text-4xl font-bold mb-4">Coursitory</h1>
           <p className="text-center text-lg">
-            Join our community of learners and start your amazing journey
-            today.
+            Join our community of learners and start your amazing journey today.
           </p>
         </div>
       </div>

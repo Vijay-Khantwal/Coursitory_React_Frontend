@@ -2,11 +2,10 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/icon_3_blue.png";
 import Search from "../pages/Search/Search.jsx";
-import toast from "react-hot-toast";
 
 const Header = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(""); // State to store search input
+  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
   const isLogged = localStorage.getItem("isLogged");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -14,7 +13,7 @@ const Header = () => {
 
   const handleSearchChange = (query) => {
     if (query.length === 0) {
-      setIsSearchOpen(false); // Close search if query is empty
+      setIsSearchOpen(false); 
     } else {
       setIsSearchOpen(true);
     }

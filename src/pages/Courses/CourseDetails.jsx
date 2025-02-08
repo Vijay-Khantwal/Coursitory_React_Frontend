@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Header from "../../components/Header";
 import toast from "react-hot-toast";
 import logo from "../../assets/icon_3_white.png";
 import Footer from "../../components/Footer";
-import NotFound from "../404ErrorPage/NotFound";
 import CourseReview from "../../components/ReviewComponents/CourseReview";
 import PaymentCard from "./PaymentPopup/PaymentCard";
+import StarRating from "../../components/StarRating";
 
 const CourseMaterial = ({
   course,
@@ -192,8 +191,8 @@ const CourseDetails = () => {
   useEffect(() => {
     const checkEnrollment = async () => {
       const token = localStorage.getItem("token");
-      console.log("here "+ course.id);
-      if(!course.id)return; 
+      console.log("here " + course.id);
+      if (!course.id) return;
 
       setIsEnrolling(true);
       try {
@@ -217,7 +216,7 @@ const CourseDetails = () => {
     checkEnrollment();
   }, [isEnrolled, course.id]);
 
-  const [isOpen,setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const handleEnroll = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -233,7 +232,6 @@ const CourseDetails = () => {
     const fetchVideoMetadata = async () => {
       setLoading(true);
       try {
-        // Fetch metadata for all videos concurrently
         const metadataPromises = course.videoList.map((videoId) =>
           axios
             .get(`${import.meta.env.VITE_API_URL}/get/metadata/${videoId}`)
@@ -242,7 +240,6 @@ const CourseDetails = () => {
         const metadata = await Promise.all(metadataPromises);
         setVideoMetadata(metadata);
 
-        // Fetch thumbnails only once
         metadata.forEach(async (video) => {
           if (!video.thumbnail) {
             setThumbnails((prev) => ({
@@ -262,7 +259,6 @@ const CourseDetails = () => {
               }));
             } catch (error) {
               console.error("Error fetching thumbnail:", error);
-              // Set logo as fallback if thumbnail fetch fails
               setThumbnails((prev) => ({
                 ...prev,
                 [video.thumbnail]: logo,
@@ -279,21 +275,6 @@ const CourseDetails = () => {
 
     fetchVideoMetadata();
   }, [course.videoList]);
-
-  const renderStars = (rating) => {
-    const stars = [];
-    const roundedRating = Math.round(rating * 2) / 2;
-    for (let i = 1; i <= 5; i++) {
-      if (i <= roundedRating) {
-        stars.push(<FaStar key={i} className="text-accentColor" />);
-      } else if (i - roundedRating === 0.5) {
-        stars.push(<FaStarHalfAlt key={i} className="text-accentColor" />);
-      } else {
-        stars.push(<FaRegStar key={i} className="text-accentColor" />);
-      }
-    }
-    return stars;
-  };
 
   const [showPaymentCard, setShowPaymentCard] = useState(false);
 
@@ -379,7 +360,9 @@ const CourseDetails = () => {
                 </button>
               </div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="flex">{renderStars(course.rating)}</div>
+                <div className="flex gap-[2px]">
+                  <StarRating rating={course.rating} colour={"#FFA500"} />
+                </div>
                 <span className="text-lg font-semibold text-gray-700 flex items-center">
                   <span className="text-2xl text-accentColor">
                     {parseFloat(course.rating).toFixed(2)}

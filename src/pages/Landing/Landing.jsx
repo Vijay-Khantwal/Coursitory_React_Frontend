@@ -70,16 +70,18 @@ const LandingPage = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
             >
-              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 blur-lg"></div>
-              <div className="absolute inset-0 bg-white bg-opacity-20 rounded-full blur-lg"></div>
-              <div className="absolute inset-0 bg-white bg-opacity-10 rounded-full blur-lg"></div>
-              <div className="absolute inset-0 bg-white bg-opacity-30 rounded-full blur-lg"></div>
-              <div className="absolute inset-0 bg-white bg-opacity-40 rounded-full blur-lg"></div>
-              <img
-                src={image}
-                alt="landingImage"
-                className="relative rounded-lg"
-              />
+              <div className="relative top-[30px] sm:top-[0px] w-[230px]">
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 blur-lg"></div>
+                <div className="absolute inset-0 bg-white bg-opacity-20 rounded-full blur-lg"></div>
+                <div className="absolute inset-0 bg-white bg-opacity-10 rounded-full blur-lg"></div>
+                <div className="absolute inset-0 bg-white bg-opacity-30 rounded-full blur-lg"></div>
+                <div className="absolute inset-0 bg-white bg-opacity-40 rounded-full blur-lg"></div>
+                <img
+                  src={image}
+                  alt="landingImage"
+                  className="relative rounded-lg"
+                />
+              </div>
             </motion.div>
           </div>
         </section>
@@ -142,7 +144,7 @@ const LandingPage = () => {
                 </div>
                 <p className="text-center font-medium">Make an Account</p>
               </div>
-              <div className="h-1 translate-y-8 bg-gray-300 flex-1 mx-4"></div>  
+              <div className="h-1 translate-y-8 bg-gray-300 flex-1 mx-4"></div>
               <div className="flex flex-col items-center mx-2 ">
                 <div className="bg-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center mb-4">
                   2

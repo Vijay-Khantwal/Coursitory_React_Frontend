@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
-import Button from "../../../components/Button"; // Assuming you have a Button component
+import Button from "../../../components/Button";
 import logo from "../../../assets/icon_3_blue.png";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { SiRazorpay } from "react-icons/si";
+import { RazorPayIcon } from "../../../components/Icons";
 
 const PaymentCard = ({ course, onClose, isOpen }) => {
-  // Fetch order details from backend
   const createOrder = async (courseId) => {
     try {
       const token = localStorage.getItem("token");
@@ -24,24 +23,22 @@ const PaymentCard = ({ course, onClose, isOpen }) => {
     }
   };
 
-  // Handle Razorpay payment initiation
   const handlePayment = async () => {
-    const orderDetails = await createOrder(course.id); // Get order details from the backend
+    const orderDetails = await createOrder(course.id);
     if(orderDetails.free){
       window.location.reload();
       toast.success("Succesfully enrolled into the course!");
       return;
     }
 
-    if (!orderDetails) return; // If order details are not fetched, exit
+    if (!orderDetails) return;
 
     const options = {
-      key: `${import.meta.env.VITE_RZP_KEY_ID}`, // Razorpay API Key
-      amount: orderDetails.amount, // Amount in paise
+      key: `${import.meta.env.VITE_RZP_KEY_ID}`,
+      amount: orderDetails.amount,
       currency: "INR",
-      order_id: orderDetails.order_id, // Only send the order_id
+      order_id: orderDetails.order_id,
       handler: async function (response) {
-        // Successful payment callback
         try {
           const paymentData = {
             razorpay_payment_id: response.razorpay_payment_id,
@@ -74,16 +71,15 @@ const PaymentCard = ({ course, onClose, isOpen }) => {
     };
 
     if (window.Razorpay) {
-      const rzp1 = new window.Razorpay(options); // Use Razorpay from window object
+      const rzp1 = new window.Razorpay(options); 
 
       rzp1.on("payment.failed", function (response) {
-        // Failed payment callback
         console.log("Payment Failed!");
         toast.error("Payment Failed! Please try again.");
-        console.error(response.error); // Handle failure details
+        console.error(response.error);
       });
 
-      rzp1.open(); // Open the Razorpay checkout window
+      rzp1.open(); 
     } else {
       console.log("Razorpay SDK failed to load!");
     }
@@ -113,14 +109,11 @@ const PaymentCard = ({ course, onClose, isOpen }) => {
 
   useEffect(() => {
     if (isOpen) {
-      // Add the no-scroll class to the body
       document.body.classList.add("no-scroll");
     } else {
-      // Remove the no-scroll class
       document.body.classList.remove("no-scroll");
     }
 
-    // Cleanup on component unmount
     return () => {
       document.body.classList.remove("no-scroll");
     };
@@ -129,23 +122,19 @@ const PaymentCard = ({ course, onClose, isOpen }) => {
   return (
     <div
       className="fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-center"
-      onClick={onClose} // Close on outside click
+      onClick={onClose}
     >
       <div
         className="w-[90%] max-w-md bg-white rounded-xl shadow-lg overflow-hidden relative"
-        onClick={(e) => e.stopPropagation()} // Prevent close on inside click
+        onClick={(e) => e.stopPropagation()} 
       >
-        {/* Close Button */}
         <button
           onClick={onClose}
           className="absolute top-1 right-3 text-gray-400 hover:text-gray-700 text-4xl"
         >
           &times;
         </button>
-
-        {/* Content */}
         <div className="">
-          {/* Thumbnail */}
           <div className="w-full bg-slate-50 border border-b-2 p-3">
             <div className="ml-auto mr-auto sm:aspect-video h-40 rounded-lg overflow-hidden">
               {thumbnail ? (
@@ -165,9 +154,6 @@ const PaymentCard = ({ course, onClose, isOpen }) => {
               )}
             </div>
           </div>
-
-          {/* Title and Price */}
-
           <div className="p-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-bold text-gray-800 truncate">
@@ -175,16 +161,13 @@ const PaymentCard = ({ course, onClose, isOpen }) => {
               </h2>
               <p className="text-xl font-bold text-green-500">
                 {course.price === 0 ? "Free" : `₹${course.price}`}
-                {/* ₹{course.price} */}
               </p>
             </div>
 
-            {/* Description */}
             <p className="text-sm text-gray-600 line-clamp-2">
               {course.description}
             </p>
 
-            {/* Tags */}
             <div className="flex flex-wrap gap-2 mt-4">
               {course.tags.map((tag, index) => (
                 <span
@@ -195,8 +178,6 @@ const PaymentCard = ({ course, onClose, isOpen }) => {
                 </span>
               ))}
             </div>
-
-            {/* Payment Button */}
             <div className="mt-6">
               <Button onClick={handlePayment}>
                 {course.price === 0 ? (
@@ -204,12 +185,11 @@ const PaymentCard = ({ course, onClose, isOpen }) => {
                 ) : (
                   <>
                     Proceed to Payment
-                    <SiRazorpay className="ml-1"></SiRazorpay>
+                    <RazorPayIcon/>
+                    
                   </>
                 )}
               </Button>
-
-              {/* {SiRazorpay} */}
             </div>
           </div>
         </div>

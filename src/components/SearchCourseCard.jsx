@@ -15,10 +15,10 @@ const SearchCourseCard = ({ course, enrolled, setIsSearchOpen }) => {
       className="bg-white border-black border-b overflow-hidden cursor-pointer transform  transition-all duration-300 w-full p-4"
     >
       <div className="flex flex-col">
-        {/* Title */}
+
         <h3 className="text-lg font-bold text-gray-900 mb-2">{course.title}</h3>
 
-        {/* Tags */}
+
         <div className="flex flex-wrap gap-2">
           {course.tags.map((tag, index) => (
             <span

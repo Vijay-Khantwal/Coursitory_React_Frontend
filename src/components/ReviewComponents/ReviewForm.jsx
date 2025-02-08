@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Button from "../Button";
 import toast from "react-hot-toast";
-import { FaStar, FaRegStar } from "react-icons/fa";
+import { EmptyStar, FullStar } from "../Icons";
 
 const ReviewForm = ({ courseId, onReviewSubmitted, existingReview }) => {
   const [newRating, setNewRating] = useState(existingReview?.rating || 0);
   const [comment, setComment] = useState(existingReview?.comment || "");
 
   const handleClick = (value) => {
-    setNewRating(value); // Set the rating based on the clicked star
+    setNewRating(value);
   };
 
   useEffect(() => {
@@ -38,11 +38,10 @@ const ReviewForm = ({ courseId, onReviewSubmitted, existingReview }) => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      onReviewSubmitted(response.data); // Refresh reviews
+      onReviewSubmitted(response.data);
     } catch (error) {
       console.error("Error submitting review:", error);
     }
-    window.location.reload();
   };
 
   return (
@@ -64,9 +63,9 @@ const ReviewForm = ({ courseId, onReviewSubmitted, existingReview }) => {
               onClick={() => handleClick(value)}
             >
               {newRating >= value ? (
-                <FaStar className="text-yellow-400" />
+                <FullStar colour="#d69e2e" />
               ) : (
-                <FaRegStar className="text-gray-300" />
+                <EmptyStar colour="#cbd5e0" />
               )}
             </div>
           ))}

@@ -6,6 +6,7 @@ import ReviewList from "./ReviewList";
 const CourseReview = ({ courseId, isEnrolled }) => {
   const [hasReviewed, setHasReviewed] = useState(false);
   const [existingReview, setExistingReview] = useState(null);
+  const [refresh, setRefresh] = useState(0);
 
   useEffect(() => {
     if (!courseId) return;
@@ -24,7 +25,7 @@ const CourseReview = ({ courseId, isEnrolled }) => {
           setHasReviewed(true);
           setExistingReview(response.data);
         }
-        console.log("User has reviewed:", response.data);
+        // console.log("User has reviewed:", response.data);
     } catch (error) {
           setHasReviewed(false);
           setExistingReview(null);
@@ -36,6 +37,8 @@ const CourseReview = ({ courseId, isEnrolled }) => {
 
   const handleReviewSubmitted = (newReview) => {
     setHasReviewed(true);
+    setExistingReview(newReview);
+    setRefresh(refresh+1);
   };
 
   return (
@@ -60,7 +63,7 @@ const CourseReview = ({ courseId, isEnrolled }) => {
         )}
       </div>
 
-      <ReviewList courseId={courseId} />
+      <ReviewList refresh={refresh} courseId={courseId} />
     </div>
   );
 };

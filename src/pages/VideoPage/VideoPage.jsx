@@ -29,25 +29,23 @@ const VideoPage = () => {
       <Header />
       <div className="min-h-screen bg-gray-100">
         <div className="max-w-7xl mx-auto px-4 py-8">
-          {/* Video Player Section */}
+
           <div className="w-full lg:w-3/4 aspect-video rounded-lg bg-black">
             <VideoPlayer courseId={courseId} video={video} />
           </div>
 
-          {/* Video Information Section */}
           <div className="mt-6">
             <h1 className="text-3xl font-bold text-gray-900 mb-4">
               {video.title}
             </h1>
 
-            {/* Meta Information */}
             {video && video.fileId && video.fileId.date && (
               <span className="text-sm text-gray-600 pl-1">
                 Uploaded on: {new Date(video.fileId.date).toLocaleDateString()}
               </span>
             )}
 
-            {/* Description */}
+
             <div className="bg-white p-6 mt-3 rounded-lg shadow-md">
               <h2 className="text-xl font-semibold text-gray-800 mb-3">
                 Description

@@ -1,28 +1,27 @@
 import React, { useEffect, useRef, useState } from "react";
 import SearchCourseCard from "../../components/SearchCourseCard.jsx";
-import { FaSpinner } from "react-icons/fa";
+
 import axios from "axios";
 import ScrollIndicator from "./ScrollIndicator.jsx";
+import { LoadingCircle } from "../../components/Icons";
 
 const Search = ({ searchPattern, setIsSearchOpen }) => {
   const [courseResults, setCourseResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [debouncedSearchPattern, setDebouncedSearchPattern] = useState(""); // Debounced search pattern
-  const blurRegionRef = useRef(null); // Ref for detecting outside clicks
+  const [debouncedSearchPattern, setDebouncedSearchPattern] = useState("");
+  const blurRegionRef = useRef(null);
   const isLogged = localStorage.getItem("isLogged");
 
-  // Debounce the search input
   useEffect(() => {
     const handler = setTimeout(() => {
-      setDebouncedSearchPattern(searchPattern); // Update debounced value after delay
-    }, 700); // 500ms delay
+      setDebouncedSearchPattern(searchPattern);
+    }, 700);
 
     return () => {
-      clearTimeout(handler); // Clear timeout if the user keeps typing
+      clearTimeout(handler);
     };
   }, [searchPattern]);
 
-  // Fetch search results based on the debounced value
   useEffect(() => {
     if (!debouncedSearchPattern) {
       setCourseResults([]);
@@ -56,7 +55,6 @@ const Search = ({ searchPattern, setIsSearchOpen }) => {
     fetchResults();
   }, [debouncedSearchPattern]);
 
-  // Close the search bar when clicking outside the search area
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -75,11 +73,17 @@ const Search = ({ searchPattern, setIsSearchOpen }) => {
 
   return (
     <div
-      className={`${isLogged ?"left-[26vw] -translate-x-1" : "left-[25vw] -translate-x-2" } absolute bg-white shadow-lg rounded-md w-[50vw] max-w-2xl p-4 max-h-[50vh]  top-[60px] overflow-y-scroll overflow-x-hidden hidden lg:block no-scrollbar`}
+      className={`${
+        isLogged ? "left-[26vw] -translate-x-1" : "left-[25vw] -translate-x-2"
+      } absolute bg-white shadow-lg rounded-md w-[50vw] max-w-2xl p-4 max-h-[50vh]  top-[60px] overflow-y-scroll overflow-x-hidden hidden lg:block no-scrollbar`}
       ref={blurRegionRef}
     >
       {isLoading ? (
-        <FaSpinner className="animate-spin text-gray-800 text-4xl mt-8" />
+        <div className="flex justify-center items-center">
+          <div className="animate-spin w-10 text-gray-800 mt-8">
+            <LoadingCircle />
+          </div>
+        </div>
       ) : (
         <>
           {Array.isArray(courseResults) && courseResults.length > 0 ? (
