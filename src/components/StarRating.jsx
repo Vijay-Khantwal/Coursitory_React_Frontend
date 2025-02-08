@@ -1,4 +1,7 @@
-import { FullStar, HalfStar, EmptyStar } from "./Icons";
+import FullStar from "./Icons/FullStar";
+import EmptyStar from "./Icons/EmptyStar";
+import HalfStar from "./Icons/HalfStar";
+
 const StarRating = ({ rating, colour }) => {
   const stars = [];
   const roundedRating = Math.round(rating * 2) / 2;

@@ -3,7 +3,7 @@ import SearchCourseCard from "../../components/SearchCourseCard.jsx";
 
 import axios from "axios";
 import ScrollIndicator from "./ScrollIndicator.jsx";
-import { LoadingCircle } from "../../components/Icons";
+import LoadingCircle from "../../components/Icons/LoadingCircle.jsx";
 
 const Search = ({ searchPattern, setIsSearchOpen }) => {
   const [courseResults, setCourseResults] = useState([]);
@@ -80,7 +80,7 @@ const Search = ({ searchPattern, setIsSearchOpen }) => {
     >
       {isLoading ? (
         <div className="flex justify-center items-center">
-          <div className="animate-spin w-10 text-gray-800 mt-8">
+          <div className=" w-12 animate-spin flex justify-center items-center text-gray-800 mt-8">
             <LoadingCircle />
           </div>
         </div>

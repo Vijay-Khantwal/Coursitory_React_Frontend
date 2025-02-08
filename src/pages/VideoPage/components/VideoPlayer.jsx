@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  PlayIcon,
-  PauseIcon,
-  VolumeMute,
-  VolumeUp,
-  Expand,
-  LoadingCircle,
-} from "../../../components/Icons";
+
+import PlayIcon from "../../../components/Icons/PlayIcon";
+import PauseIcon from "../../../components/Icons/PauseIcon";
+import VolumeMute from "../../../components/Icons/VolumeMute";
+import VolumeUp from "../../../components/Icons/VolumeUp";
+import Expand from "../../../components/Icons/Expand";
+import LoadingCircle from "../../../components/Icons/LoadingCircle";
+
 import axios from "axios";
 import logo from "../../../assets/icon_3_white.png";
 
@@ -123,7 +123,7 @@ const VideoPlayer = ({ courseId, video }) => {
 
       {isBuffering && (
         <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="animate-spin w-10 text-white ">
+          <div className=" w-12 animate-spin flex justify-center items-center text-white ">
             <LoadingCircle />
           </div>
         </div>

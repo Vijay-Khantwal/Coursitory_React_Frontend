@@ -5,8 +5,11 @@ import logo from "../../assets/icon_3_white.png";
 import logoBLack from "../../assets/icon_3_black.png";
 import axios from "axios";
 import GLoginButton from "./components/GLoginButton";
-import Button from "../../components/Button";
-import { CloseEye, LoadingCircle, OpenEye } from "../../components/Icons";
+import Button from "../../components/Button"; 
+
+import CloseEye from "../../components/Icons/CloseEye";
+import LoadingCircle from "../../components/Icons/LoadingCircle";
+import OpenEye from "../../components/Icons/OpenEye";
 
 const Signup = () => {
   const navigate = useNavigate();

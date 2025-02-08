@@ -6,7 +6,10 @@ import logoBLack from "../../assets/icon_3_black.png";
 import axios from "axios";
 import GLoginButton from "./components/GLoginButton";
 import Button from "../../components/Button";
-import { CloseEye, LoadingCircle, OpenEye } from "../../components/Icons";
+
+import CloseEye from "../../components/Icons/CloseEye";
+import LoadingCircle from "../../components/Icons/LoadingCircle";
+import OpenEye from "../../components/Icons/OpenEye";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -160,7 +163,7 @@ const Login = () => {
                     onClick={togglePasswordVisibility}
                     className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
                   >
-                    {showPassword ? <FaEyeSlash /> : <OpenEye />}
+                    {showPassword ? <CloseEye /> : <OpenEye />}
                   </button>
                 </div>
               </div>
