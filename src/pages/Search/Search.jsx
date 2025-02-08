@@ -3,7 +3,7 @@ import SearchCourseCard from "../../components/SearchCourseCard.jsx";
 
 import axios from "axios";
 import ScrollIndicator from "./ScrollIndicator.jsx";
-import { LoadingCircle } from "../../components/icons.jsx";
+import { LoadingCircle } from "../../components/Icons";
 
 const Search = ({ searchPattern, setIsSearchOpen }) => {
   const [courseResults, setCourseResults] = useState([]);

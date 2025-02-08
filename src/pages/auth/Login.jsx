@@ -6,7 +6,7 @@ import logoBLack from "../../assets/icon_3_black.png";
 import axios from "axios";
 import GLoginButton from "./components/GLoginButton";
 import Button from "../../components/Button";
-import { CloseEye, LoadingCircle, OpenEye } from "../../components/icons";
+import { CloseEye, LoadingCircle, OpenEye } from "../../components/Icons";
 
 const Login = () => {
   const navigate = useNavigate();

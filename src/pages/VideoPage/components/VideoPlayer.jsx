@@ -6,7 +6,7 @@ import {
   VolumeUp,
   Expand,
   LoadingCircle,
-} from "../../../components/icons";
+} from "../../../components/Icons";
 import axios from "axios";
 import logo from "../../../assets/icon_3_white.png";
 

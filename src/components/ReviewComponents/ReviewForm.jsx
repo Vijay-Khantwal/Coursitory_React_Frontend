@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Button from "../Button";
 import toast from "react-hot-toast";
-import { EmptyStar, FullStar } from "../icons";
+import { EmptyStar, FullStar } from "../Icons";
 
 const ReviewForm = ({ courseId, onReviewSubmitted, existingReview }) => {
   const [newRating, setNewRating] = useState(existingReview?.rating || 0);
