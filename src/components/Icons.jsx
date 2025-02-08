@@ -19,7 +19,7 @@ export const LoadingCircle = () => (
   <svg
     stroke="currentColor"
     fill="currentColor"
-    // stroke-width="0"
+    stroke-width="0"
     version="1.1"
     viewBox="0 0 16 16"
     height="full"
