@@ -3,7 +3,7 @@ import Button from "../../../components/Button";
 import logo from "../../../assets/icon_3_blue.png";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { RazorPayIcon } from "../../../components/icons";
+import { RazorPayIcon } from "../../../components/Icons";
 
 const PaymentCard = ({ course, onClose, isOpen }) => {
   const createOrder = async (courseId) => {
