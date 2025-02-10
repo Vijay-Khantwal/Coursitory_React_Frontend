@@ -184,7 +184,7 @@ const PaymentCard = ({ course, onClose, isOpen }) => {
                   "Enroll for Free"
                 ) : (
                   <>
-                    Proceed to Payment
+                    Proceed to Payment &nbsp;
                     <RazorPayIcon/>
                     
                   </>

@@ -2,9 +2,9 @@ import React from "react";
 
 export const RazorPayIcon = () => (
   <svg
-    className="ml-1"
     stroke="currentColor"
     fill="currentColor"
+    stroke-width="0"
     role="img"
     viewBox="0 0 24 24"
     height="15px"
